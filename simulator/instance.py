@@ -1,46 +1,52 @@
 # -*- coding: utf-8 -*-
 import logging
 import numpy as np
+import networkx as nx
+
+def assign_weights(g):
+    maxim=0
+    for j in g.nodes:
+        fff=[]
+        for i in g.successors(j):
+            fff.append(i)
+            
+        weig=len(fff)
+        
+        for i in g.successors(j):
+            weig_arc=weig+np.random.uniform(-0.2*weig,0.2*weig)
+            g[j][i]['weight']=weig_arc
+            if weig_arc>maxim:
+                maxim=weig_arc
+    
+    for j in g.nodes:
+        for i in g.successors(j):
+            g[j][i]['weight']=g[j][i]['weight']/maxim
+    return g
 
 
 class Instance():
     def __init__(self, sim_setting):
         logging.info("starting simulation...")
-        self.max_size = sim_setting['knapsack_size']
-        self.sizes = np.around(np.random.uniform(
-            sim_setting['low_size'],
-            sim_setting['high_size'],
-            sim_setting['n_items']
-        ))
-        self.profits = np.around(np.random.uniform(
-            sim_setting['low_profit'],
-            sim_setting['high_profit'],
-            sim_setting['n_items']
-        ), 2)
-        self.n_items = sim_setting['n_items']
+        self.graph_order = sim_setting['Graph_Order']
+        self.K = sim_setting['Seed_card']
+        self.graph_seed=seed=sim_setting['Graph_seed_generation']
+        
+        self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
 
-        self.sizes_ss = np.around(np.random.uniform(
-            sim_setting['low_size'],
-            sim_setting['high_size'],
-            sim_setting['n_items']
-        ))
-        self.max_size_ss = sim_setting['knapsack_size']
+        self.g=assign_weights(self.g)
+        self.adj_mat=self.g._adj
 
-        logging.info(f"max_size: {self.max_size}")
-        logging.info(f"sizes: {self.sizes}")
-        logging.info(f"profits: {self.profits}")
-        logging.info(f"n_items: {self.n_items}")
-        logging.info(f"sizes_ss: {self.sizes_ss}")
-        logging.info(f"max_size_ss: {self.max_size_ss}")
+        logging.info(f"Order of the graph: {self.graph_order}")
+        logging.info(f"Maximum seeds to be considered: {self.K}")
+        logging.info(f"Adjacency Matrix: {self.adj_mat}")
+        logging.info(f"Seed of the graph: {self.graph_seed}")
         logging.info("simulation end")
 
     def get_data(self):
         logging.info("getting data from instance...")
         return {
-            "profits": self.profits,
-            "sizes": self.sizes,
-            "max_size": self.max_size,
-            "n_items": self.n_items,
-            "sizes_ss": self.sizes_ss,
-            "max_size_ss": self.max_size_ss,
+            "Order": self.graph_order,
+            "K": self.K,
+            "Seed": self.graph_seed,
+            "Adj_mat": self.adj_mat,
         }
