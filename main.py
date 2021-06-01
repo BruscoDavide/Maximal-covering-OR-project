@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from simulator.instance import Instance
 from simulator.tester import Tester
-from solver.simpleKnapsack import SimpleKnapsack
+from solver.LargeScaleInfluence import LargeScaleInfluence
 from heuristic.simpleHeu import SimpleHeu
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
@@ -29,22 +29,22 @@ if __name__ == '__main__':
 
     inst = Instance(sim_setting)
     dict_data = inst.get_data()
-    print(dict_data)
+   # print(dict_data)
     
     # Reward generation
     n_scenarios = 5
-    reward = sam.sample_stoch(
+    reachability = sam.reachability_generation(
         inst,
         n_scenarios=n_scenarios
     )
 
-    heu = SimpleHeu()
-    of_heu, sol_heu, comp_time_heu = heu.solve(
+    exact = LargeScaleInfluence()
+    of_exact, sol_exact, comp_time_exact = exact.solve(
         dict_data,
-        reward,
+        reachability,
         n_scenarios,
     )
-    print(of_heu, sol_heu, comp_time_heu)
+    print(of_exact, sol_exact, comp_time_exact)
 
     # mean_reward = sam.sample_ev(
     #     inst,
