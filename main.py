@@ -12,6 +12,8 @@ from utility.plot_results import plot_comparison_hist
 
 np.random.seed(0)
 
+mammt = 1
+
 if __name__ == '__main__':
     log_name = "./logs/main.log"
     logging.basicConfig(
