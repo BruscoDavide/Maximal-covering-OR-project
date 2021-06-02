@@ -43,6 +43,7 @@ if __name__ == '__main__':
         dict_data,
         reachability,
         n_scenarios,
+        verbose = True
     )
     print(of_exact, sol_exact, comp_time_exact)
 

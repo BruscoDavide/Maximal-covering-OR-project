@@ -58,19 +58,14 @@ class LargeScaleInfluence():
             f"Constraint on starting seed"
         )
 
-        model.addConstr(
-            X[i,w] <= gp.quicksum(Z[j] for j in reachability[i][:][w]) for i in nodes for j in scenarios
-        )
+
+        for w in scenarios:
+            for i in nodes:
+                model.addConstr(
+                            X[i,w] <= gp.quicksum(Z[j] for j in reachability[i][:][w])
+                )
 
         '''
-        model.addConstr(
-            for w in scenarios:
-                for i in nodes:
-                    ext_scenario=reachability[:][:][w]
-                    X[i,w] <= gp.quicksum(Z[j] for j in ext_scenario[i][:])
-        )
-
-        
         for s in scenarios:
             model.addConstr(
                 gp.quicksum(dict_data['sizes_ss'][i] * Y[i, s] for i in ) <= dict_data['max_size_ss'],
@@ -102,9 +97,10 @@ class LargeScaleInfluence():
         sol = [0] * dict_data['Order']
         of = -1
         if model.status == GRB.Status.OPTIMAL:
-            for i in nodes:
+           # for w in scenarios:
+            for i in nodes:  
                 grb_var = model.getVarByName(
-                    f"X[{i}]"
+                    f"Z[{i}]"
                 )
                 sol[i] = grb_var.X
             of = model.getObjective().getValue()
