@@ -43,19 +43,18 @@ class FirstHeuristic():
             activating_set=[]
 
 
-            for i in nodes:
-                for ml in zi[w]:
-                    activating_set.append(ml)            
-                    activated_set.append(zi[w])
+            for ml in zi[w]:
+                activating_set.append(ml)            
+                activated_set.append(ml)
 
-                while activating_set!=[]:
-                    j=activating_set.pop()
-                    for f in dict_data["Graph"].successors(j):
-                        if f not in activated_set:
-                            temp = np.around(np.random.uniform(0,1),4)
-                            if temp<=dict_data["Graph"][j][f]['weight']:
+            while activating_set!=[]:
+                j=activating_set.pop()
+                for f in dict_data["Graph"].successors(j):
+                    if f not in activated_set:
+                        temp = np.around(np.random.uniform(0,1),4)
+                        if temp<=dict_data["Graph"][j][f]['weight']:
 
-                                activated_set.append(f)
+                            activated_set.append(f)
                                 
             su+=len(activated_set)
 

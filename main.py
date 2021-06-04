@@ -32,12 +32,12 @@ if __name__ == '__main__':
    # print(dict_data)
     
     # Reward generation
-    n_scenarios = 50
+    n_scenarios = 5
     reachability = sam.reachability_generation(
         inst,
         n_scenarios=n_scenarios
     )
-    '''
+    
     prb = LargeScaleInfluence()
     of_exact, sol_exact, comp_time_exact = prb.solve(
         dict_data,
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         verbose = True
     )
     print(of_exact, sol_exact, comp_time_exact)
-    '''
+    
 
     heu1 = FirstHeuristic()
 
