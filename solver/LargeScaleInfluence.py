@@ -62,7 +62,7 @@ class LargeScaleInfluence():
         for w in scenarios:
             for i in nodes:
                 model.addConstr(
-                            X[i,w] <= gp.quicksum(Z[j] for j in reachability[i][:][w])
+                            X[i,w] <= gp.quicksum(Z[j] for j in reachability[w][i][:])
                 )
 
         '''

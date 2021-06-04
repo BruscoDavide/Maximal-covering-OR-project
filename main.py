@@ -32,7 +32,7 @@ if __name__ == '__main__':
    # print(dict_data)
     
     # Reward generation
-    n_scenarios = 5
+    n_scenarios = 50
     reachability = sam.reachability_generation(
         inst,
         n_scenarios=n_scenarios
