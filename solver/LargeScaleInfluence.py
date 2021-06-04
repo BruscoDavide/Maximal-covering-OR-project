@@ -36,7 +36,7 @@ class LargeScaleInfluence():
             vtype=GRB.INTEGER,
             name='Z'
         )
-
+       
 
 
         p=1/n_scenarios
@@ -62,8 +62,10 @@ class LargeScaleInfluence():
         for w in scenarios:
             for i in nodes:
                 model.addConstr(
-                X[i,w] <= gp.quicksum(Z[j] for j in reachability[i][:][w])
+                X[i,w] <= gp.quicksum(Z[j] for j in reachability[w][i][:])
         )
+
+
 
         '''
         for s in scenarios:
@@ -99,8 +101,8 @@ class LargeScaleInfluence():
         if model.status == GRB.Status.OPTIMAL:
             for i in nodes:
                 grb_var = model.getVarByName(
-                    f"X[{i}]"
+                    f"Z[{i}]"
                 )
-                sol[i] = grb_var.X
+                sol[i] = grb_var
             of = model.getObjective().getValue()
         return of, sol, comp_time
