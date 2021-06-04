@@ -49,4 +49,5 @@ class Instance():
             "K": self.K,
             "Seed": self.graph_seed,
             "Adj_mat": self.adj_mat,
+            "Graph" : self.g
         }

@@ -6,7 +6,7 @@ import numpy as np
 from simulator.instance import Instance
 from simulator.tester import Tester
 from solver.LargeScaleInfluence import LargeScaleInfluence
-from heuristic.simpleHeu import SimpleHeu
+from heuristic.FirstHeuristic import FirstHeuristic
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
 
@@ -37,15 +37,26 @@ if __name__ == '__main__':
         inst,
         n_scenarios=n_scenarios
     )
-
-    exact = LargeScaleInfluence()
-    of_exact, sol_exact, comp_time_exact = exact.solve(
+    '''
+    prb = LargeScaleInfluence()
+    of_exact, sol_exact, comp_time_exact = prb.solve(
         dict_data,
         reachability,
         n_scenarios,
         verbose = True
     )
     print(of_exact, sol_exact, comp_time_exact)
+    '''
+
+    heu1 = FirstHeuristic()
+
+    of_heu, sol_heu, comp_time = heu1.solve(
+        dict_data,
+        reachability,
+        n_scenarios
+    )
+
+    print(of_heu, sol_heu, comp_time)
 
     # mean_reward = sam.sample_ev(
     #     inst,
