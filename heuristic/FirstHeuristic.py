@@ -27,8 +27,8 @@ class FirstHeuristic():
             freqs = np.zeros([dict_data['Order']])
 
             for i in nodes:
-                for j in nodes:
-                    freqs[i]+=reach_scen[j][i]
+                for j in range(len(reach_scen[i])):
+                    freqs[reach_scen[j]]+=1
 
             idx=list(np.argsort(freqs))
             idx.reverse()

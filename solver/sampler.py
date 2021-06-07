@@ -13,14 +13,14 @@ class Sampler:
         nodes=range(instance.graph_order)
         scenarios=range(n_scenarios)
 
-        reach=np.zeros([n_scenarios, instance.graph_order,  instance.graph_order], dtype=int)
+        reach=np.zeros([n_scenarios, instance.graph_order], dtype=list)
 
         for w in scenarios:
             for i in nodes:
+                reach[w][i]=[]
                 for j in instance.g.predecessors(i): 
-                
                     temp = np.around(np.random.uniform(0,1),4)
                     if temp<=nod[j][i]['weight']:
-                        reach[w][i][j]=1
+                        reach[w][i].append(j)
         return reach
 
