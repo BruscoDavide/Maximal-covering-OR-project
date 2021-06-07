@@ -23,6 +23,24 @@ def assign_weights(g):
             g[j][i]['weight']=g[j][i]['weight']/maxim
     return g
 
+def generate_graph(fname):
+    fp=open(fname, 'r')
+    Lines=fp.readlines()
+    vec=[]
+
+    for line in Lines:
+        x=line.split()
+        vec.append([int(x[0]), int(x[1])])
+
+    g=nx.DiGraph()
+
+    for i in range(len(vec)):
+        from_node=vec[i][0]
+        to_node=vec[i][1]
+        g.add_edge(from_node, to_node)
+
+    return g
+    
 
 class Instance():
     def __init__(self, sim_setting):
@@ -31,6 +49,7 @@ class Instance():
         self.K = sim_setting['Seed_card']
         self.graph_seed=seed=sim_setting['Graph_seed_generation']
         
+        #self.g=generate_graph(fname)
         self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
 
         self.g=assign_weights(self.g)
