@@ -4,6 +4,17 @@ import math
 import logging
 import numpy as np
 
+def compute_succ(g, R, z_j):
+    succ_computed=[]
+    for i in range(len(R)):
+        for j in R[i]:
+            if j==z_j:
+                succ_computed.append(i)
+    return succ_computed
+
+    
+
+
 class FirstHeuristic():
     def __init__(self):
         pass
@@ -11,7 +22,7 @@ class FirstHeuristic():
     def solve(
         self, dict_data, reachability, n_scenarios,
     ):
-        sol_x = [0] * dict_data['Order']
+        sol_z = [0] * dict_data['Order']
         of = -1
         
         start = time.time()
@@ -28,7 +39,7 @@ class FirstHeuristic():
 
             for i in nodes:
                 for j in range(len(reach_scen[i])):
-                    freqs[reach_scen[j]]+=1
+                    freqs[reach_scen[i][j]]+=1
 
             idx=list(np.argsort(freqs))
             idx.reverse()
@@ -36,7 +47,8 @@ class FirstHeuristic():
 
         print(zi)
             
-        su=0
+        of=0
+        p=1/n_scenarios
         for w in scenarios:
     
             activated_set=[]
@@ -49,31 +61,31 @@ class FirstHeuristic():
 
             while activating_set!=[]:
                 j=activating_set.pop()
-                for f in dict_data["Graph"].successors(j):
+                fiter=compute_succ(dict_data["Graph"], reachability[w], j)
+                for f in fiter:
                     if f not in activated_set:
                         temp = np.around(np.random.uniform(0,1),4)
                         if temp<=dict_data["Graph"][j][f]['weight']:
 
                             activated_set.append(f)
                                 
-            su+=len(activated_set)
+            of+=len(activated_set)*p
 
-
-            '''
-            summ=0
-            for m in dict_data["Graph"].predecessors(f):
-                summ=summ+dict_data["Graph"][m][f]['weight']
-
-            if summ >= generic_treshold:
-                activated_set.append(f)
-                activating_set.append(f)
-            '''
-
-
-        of=su/n_scenarios
+        freqs = np.zeros([dict_data['Order']])
+        for i in zi:
+            for j in i:
+                freqs[j]+=1
+                
+        idx=list(np.argsort(freqs))
+        idx.reverse()
+        
+        for i in idx[0:dict_data['K']]:
+            sol_z[i]=1
 
         end = time.time()
 
         comp_time = end - start
         
-        return of, sol_x, comp_time
+        
+        
+        return round(of,4), sol_z, comp_time

@@ -10,7 +10,7 @@ from heuristic.FirstHeuristic import FirstHeuristic
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
 
-np.random.seed(0)
+# np.random.seed(0)
 
 if __name__ == '__main__':
     log_name = "./logs/main.log"
@@ -32,12 +32,12 @@ if __name__ == '__main__':
    # print(dict_data)
     
     # Reward generation
-    n_scenarios = 5
+    n_scenarios = 10
     reachability = sam.reachability_generation(
         inst,
         n_scenarios=n_scenarios
     )
-    
+
     prb = LargeScaleInfluence()
     of_exact, sol_exact, comp_time_exact = prb.solve(
         dict_data,

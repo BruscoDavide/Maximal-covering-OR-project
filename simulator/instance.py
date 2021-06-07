@@ -40,7 +40,15 @@ def generate_graph(fname):
         g.add_edge(from_node, to_node)
 
     return g
-    
+
+
+def generate_simple(N):
+    g=nx.DiGraph()
+    for i in range(0, N):
+        if i != 9:
+            g.add_edge(9,i)
+
+    return g    
 
 class Instance():
     def __init__(self, sim_setting):
@@ -51,10 +59,17 @@ class Instance():
         self.fname=sim_setting['File_Name_Graph']
         
         # self.g=generate_graph(self.fname)
+
+        # self.g=generate_simple(self.graph_order)
+
         # self.graph_order = self.g.order
 
 
         self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
+
+
+
+
         
         self.g=assign_weights(self.g)
         self.adj_mat=self.g._adj

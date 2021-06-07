@@ -45,12 +45,11 @@ class LargeScaleInfluence():
 
         obj_funct = 0
         for w in scenarios:
-            obj_funct += gp.quicksum(X[i,w] for i in nodes)
-            obj_funct *= p
+            obj_funct += p * gp.quicksum(X[i,w] for i in nodes)
+            
 
 
-        # for s in scenarios:
-        #     obj_funct += gp.quicksum(reward[i, s] * Y[i, s] for i in items)/(n_scenarios + 0.0)
+        
         model.setObjective(obj_funct, GRB.MAXIMIZE)
 
         model.addConstr(
@@ -62,7 +61,7 @@ class LargeScaleInfluence():
         for w in scenarios:
             for i in nodes:
                 model.addConstr(
-                            X[i,w] <= gp.quicksum(Z[j] for j in reachability[w][i][:])
+                            X[i,w] <= gp.quicksum(Z[j] for j in reachability[w][i])
                 )
 
         '''
@@ -94,6 +93,8 @@ class LargeScaleInfluence():
         end = time.time()
         comp_time = end - start
         
+        
+        
         sol = [0] * dict_data['Order']
         of = -1
         if model.status == GRB.Status.OPTIMAL:
@@ -102,6 +103,6 @@ class LargeScaleInfluence():
                 grb_var = model.getVarByName(
                     f"Z[{i}]"
                 )
-                sol[i] = grb_var.X
-            of = model.getObjective().getValue()
+                sol[i] = int(grb_var.X)
+            of = round(model.getObjective().getValue(),4)
         return of, sol, comp_time
