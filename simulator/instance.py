@@ -30,7 +30,7 @@ def generate_graph(fname):
 
     for line in Lines:
         x=line.split()
-        vec.append([int(x[0]), int(x[1])])
+        vec.append([int(x[0])-1, int(x[1])-1])
 
     g=nx.DiGraph()
 
@@ -47,11 +47,15 @@ class Instance():
         logging.info("starting simulation...")
         self.graph_order = sim_setting['Graph_Order']
         self.K = sim_setting['Seed_card']
-        self.graph_seed=seed=sim_setting['Graph_seed_generation']
+        self.graph_seed=sim_setting['Graph_seed_generation']
+        self.fname=sim_setting['File_Name_Graph']
         
-        #self.g=generate_graph(fname)
-        self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
+        # self.g=generate_graph(self.fname)
+        # self.graph_order = self.g.order
 
+
+        self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
+        
         self.g=assign_weights(self.g)
         self.adj_mat=self.g._adj
 
