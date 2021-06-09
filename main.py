@@ -76,10 +76,23 @@ if __name__ == '__main__':
     # COMPARISON:
     # test = Tester()
     # n_scenarios = 1000
-    # reward_1 = sam.sample_stoch(
+    '''
+    tipo qua definiamo il numero di prove che vogliamo fare.
+    ci facciamo ventordici reachability matrices, una per ogni prova che vogliamo provare a fare
+
+    Per aggiungere un po' di spicy, possiamo definire un seed all'interno di sampler cosi' ogni volta che 
+    creiamo una reachability matrix, ci viene un po' diversa e abbiamo piu' stocasticita'
+    '''
+    # reward_1 = sam.sample_stoch( 
     #     inst,
     #     n_scenarios=n_scenarios
     # )
+    '''
+    poi con quella reachability ed il set Z (sol_exact), facciamo la prova ed espandiamo l'influenza.
+    Cosa importante in questo caso, non facciamo piu' la media su tutti i scenari, ma si prende ogni scenario
+    in parte, si fa la sua espansione di influenza, ci si salva il numero di nodi attivati in una lista 
+    e poi si plotta alla fine l'istogramma
+    '''
     # ris1 = test.solve_second_stages(
     #     inst,
     #     sol_exact,
@@ -96,6 +109,13 @@ if __name__ == '__main__':
     #     n_scenarios,
     #     reward_2
     # )
+    """
+    per ogni prova ci salviamo i risultati, immagino qualcosa come il numero di nodi attivati e ne tracciamo un 
+    istogramma, poi le paragoniamo.
+    Si spera le distribuzioni vengano simili
+    la cosa che mi crea qualche dubbio e' che questo ragionamento e' molto simile a cio' che si fa per la sample stability e non capisco bene la differenza
+    tra i due approcci
+    """
     # plot_comparison_hist(
     #     [ris1, ris2],
     #     ["run1", "run2"],
