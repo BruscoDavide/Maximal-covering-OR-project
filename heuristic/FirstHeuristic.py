@@ -44,8 +44,6 @@ class FirstHeuristic():
             idx=list(np.argsort(freqs))
             idx.reverse()
             zi.append(idx[0:dict_data['K']])
-
-        print(zi)
             
         of=0
         p=1/n_scenarios
@@ -64,10 +62,10 @@ class FirstHeuristic():
                 fiter=compute_succ(dict_data["Graph"], reachability[w], j)
                 for f in fiter:
                     if f not in activated_set:
-                        temp = np.around(np.random.uniform(0,1),4)
-                        if temp<=dict_data["Graph"][j][f]['weight']:
+                        # temp = np.around(np.random.uniform(0,1),4)
+                        # if temp<=dict_data["Graph"][j][f]['weight']:
 
-                            activated_set.append(f)
+                        activated_set.append(f)
                                 
             of+=len(activated_set)*p
 

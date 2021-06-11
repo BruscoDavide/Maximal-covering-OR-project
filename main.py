@@ -88,8 +88,48 @@ if __name__ == '__main__':
     # print(of_exact, sol_exact, comp_time_exact)
 
     # COMPARISON:
-    # test = Tester()
-    # n_scenarios = 1000
+    # in sample stability
+    test = Tester()
+    n_scenarios_in = 100
+    n_repetitions = 1000
+
+    of_grblist=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+
+    print("List of sols gurobi: "+str(of_grblist))
+
+    of_heulist=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+
+    print("List of sols heuristic: "+str(of_heulist))
+
+    plot_comparison_hist(
+            [of_grblist, of_heulist],
+            ["Exact", "Heuristic"],
+            ['red', 'blue'],
+            "E[nodes_influenced]", "occurencies", 0
+        )
+
+    #COMPARISON:
+    #out of sample stability
+
+
+    n_scenarios_in = 100
+    n_scenarios_out = 1000
+    n_repetitions = 100
+
+    E_inf_grblist=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
+
+    E_inf_heulist=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
+
+
+    plot_comparison_hist(
+        [E_inf_grblist, E_inf_heulist],
+        ["Exact", "Heuristic"],
+        ['red', 'blue'],
+        "E[nodes_influenced]", "occurencies", 1
+    )
+
+
+
     '''
     tipo qua definiamo il numero di prove che vogliamo fare.
     ci facciamo ventordici reachability matrices, una per ogni prova che vogliamo provare a fare

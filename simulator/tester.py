@@ -7,6 +7,14 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
 
+def compute_succ(g, R, z_j):
+    succ_computed=[]
+    for i in range(len(R)):
+        for j in R[i]:
+            if j==z_j:
+                succ_computed.append(i)
+    return succ_computed
+
 
 class Tester():
     def __init__(self):
@@ -36,61 +44,85 @@ class Tester():
         return ans_dict
 
     #noi non abbiamo nessun second stage solution
-    """  def solve_second_stages(
-        self, inst, sol, n_scenarios, reward
+    def apply_influence_model(
+        self, inst, sol, n_scenarios, reachability, dict_data
     ):
-        ans = []
-        obj_fs = 0
-        for i in range(inst.n_items):
-            obj_fs += inst.profits[i] * sol[i]
-        items = range(inst.n_items)
-        for s in range(n_scenarios):
-            problem_name = "SecondStagePrb"
-            model = gp.Model(problem_name)
-            Y = model.addVars(
-                inst.n_items,
-                lb=0,
-                ub=1,
-                vtype=GRB.INTEGER,
-                name='Y'
-            )
 
-            obj_funct = gp.quicksum(reward[i, s] * Y[i] for i in items)
+        
+        activated_set=[]
+        activating_set=[]
 
-            model.setObjective(obj_funct, GRB.MAXIMIZE)
+
+        for i in range(len(sol)):
+            ml=sol[i]
+            if ml==1:
+                activating_set.append(i)            
+                activated_set.append(i)
+
+        while activating_set!=[]:
+            j=activating_set.pop()
+            fiter=compute_succ(dict_data["Graph"], reachability, j)
+            for f in fiter:
+                if f not in activated_set:
+                    temp = np.around(np.random.uniform(0,1),4)
+                    if temp<=dict_data["Graph"][j][f]['weight']:
+
+                        activated_set.append(f)
+                            
+        return len(activated_set)
+        
+        
+        
+        
+        # for i in range(inst.n_items):
+        #     obj_fs += inst.profits[i] * sol[i]
+        # items = range(inst.n_items)
+        # for s in range(n_scenarios):
+        #     problem_name = "SecondStagePrb"
+        #     model = gp.Model(problem_name)
+        #     Y = model.addVars(
+        #         inst.n_items,
+        #         lb=0,
+        #         ub=1,
+        #         vtype=GRB.INTEGER,
+        #         name='Y'
+        #     )
+
+        #     obj_funct = gp.quicksum(reward[i, s] * Y[i] for i in items)
+
+        #     model.setObjective(obj_funct, GRB.MAXIMIZE)
             
-            model.addConstr(
-                gp.quicksum(inst.sizes_ss[i] * Y[i] for i in items) <= inst.max_size_ss,
-                f"volume_limit_ss"
-            )
-            for i in items:
-                model.addConstr(
-                    Y[i] <= sol[i],
-                    f"link_X_Y_for_item_{i}"
-                )
-            model.update()
-            model.setParam('OutputFlag', 0)
-            model.setParam('LogFile', './logs/gurobi.log')
-            model.optimize()
-            ans.append(obj_fs + model.getObjective().getValue())
+        #     model.addConstr(
+        #         gp.quicksum(inst.sizes_ss[i] * Y[i] for i in items) <= inst.max_size_ss,
+        #         f"volume_limit_ss"
+        #     )
+        #     for i in items:
+        #         model.addConstr(
+        #             Y[i] <= sol[i],
+        #             f"link_X_Y_for_item_{i}"
+        #         )
+        #     model.update()
+        #     model.setParam('OutputFlag', 0)
+        #     model.setParam('LogFile', './logs/gurobi.log')
+        #     model.optimize()
+        #     ans.append(obj_fs + model.getObjective().getValue())
 
-        return ans """
 
-    def in_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol):
+    def in_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol, dict_data):
         ################### codice fadda ###################
-        """ans = [0] * n_repertions
+        ans = [0] * n_repertions
         for i in range(n_repertions):
 
-        reward = sampler.sample_stoch(
-            instance,
-            n_scenarios=n_scenarios_sol
-        )
-        of, sol, comp_time = problem.solve(
-            instance,
-            reward,
-            n_scenarios_sol
-        )
-        ans[i] = of """
+            reachability = sampler.reachability_generation(
+                instance,
+                n_scenarios=n_scenarios_sol
+            )
+            of, sol, comp_time = problem.solve(
+                dict_data,
+                reachability,
+                n_scenarios_sol
+            )
+            ans[i] = of 
         ####################################################
 
         """
@@ -147,27 +179,37 @@ class Tester():
     
     la prima la si fa in in sample stab, la seconda in out of sample stab
     """
-    def out_of_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out):
-        ans = [0] * n_repertions
+    def out_of_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out, dict_data):
+        ans = []
         for i in range(n_repertions):
-            reward= sampler.sample_stoch(
+
+            reachability = sampler.reachability_generation(
                 instance,
                 n_scenarios=n_scenarios_sol
             )
             of, sol, comp_time = problem.solve(
-                instance,
-                reward,
+                dict_data,
+                reachability,
                 n_scenarios_sol
             )
-            reward_out = sampler.sample_stoch(
+            
+
+            #now out of check
+            
+            reachability_out = sampler.reachability_generation(
                 instance,
                 n_scenarios=n_scenarios_out
             )
-            profits = self.solve_second_stages(
-                instance, sol,
-                n_scenarios_out, reward_out,
-                "profit"
-            )
-            ans[i]=np.mean(profits)
-            
+            sols_vec=np.zeros(n_scenarios_out)
+            for j in range(n_scenarios_out):
+                sol_out = self.apply_influence_model(
+                    instance, sol,
+                    n_scenarios_out, reachability_out[j], dict_data
+                )
+                sols_vec[j]=sol_out
+                ans.append(sol_out)
+
+
+            # ans.append(sols_vec)
+
         return ans
