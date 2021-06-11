@@ -58,6 +58,20 @@ if __name__ == '__main__':
 
     print(of_heu, sol_heu, comp_time)
 
+
+    #in sample: compara objective function di entrambe le soluzioni
+
+    #out of sample: compariamo usando un campione molto più grande
+    #usare numero di scenari molto più grandi rispetto a in sample
+    #genero degli scenari per gurobi
+    #genero altri scenari per l'euristica
+    #nell'out of sample prendo la soluzione dei seed, e uso quelli per vedere quanti ne sono influenzati
+    
+    
+    #per il valore atteso (per ogni variabile aleatoria mettiamo il suo valore atteso)
+    #determinare il valore atteso dei nodi che influenzano
+    
+
     # mean_reward = sam.sample_ev(
     #     inst,
     #     n_scenarios=n_scenarios
