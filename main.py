@@ -90,23 +90,23 @@ if __name__ == '__main__':
     # COMPARISON:
     # in sample stability
     test = Tester()
-    n_scenarios_in = 100
-    n_repetitions = 1000
+    # n_scenarios_in = 100
+    # n_repetitions = 1000
 
-    of_grblist=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    # of_grblist=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
 
-    print("List of sols gurobi: "+str(of_grblist))
+    # print("List of sols gurobi: "+str(of_grblist))
 
-    of_heulist=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    # of_heulist=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
 
-    print("List of sols heuristic: "+str(of_heulist))
+    # print("List of sols heuristic: "+str(of_heulist))
 
-    plot_comparison_hist(
-            [of_grblist, of_heulist],
-            ["Exact", "Heuristic"],
-            ['red', 'blue'],
-            "E[nodes_influenced]", "occurencies", 0
-        )
+    # plot_comparison_hist(
+    #         [of_grblist, of_heulist],
+    #         ["Exact", "Heuristic"],
+    #         ['red', 'blue'],
+    #         "E[nodes_influenced]", "occurencies", 0
+    #     )
 
     #COMPARISON:
     #out of sample stability
@@ -116,9 +116,9 @@ if __name__ == '__main__':
     n_scenarios_out = 1000
     n_repetitions = 100
 
-    E_inf_grblist=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
+    E_inf_grblist, E_r=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
 
-    E_inf_heulist=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
+    E_inf_heulist,_=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
 
 
     plot_comparison_hist(

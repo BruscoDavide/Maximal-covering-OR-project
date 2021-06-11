@@ -20,6 +20,17 @@ class Tester():
     def __init__(self):
         pass
 
+    def compute_expected_reach(reachability_out, n_scenarios_out, n_nodes):
+        freqs=np.zeros(n_nodes)
+        for w in reachability_out:
+            for i in w:
+                for j in i:
+                    freqs[j]+=1
+
+        freqs=freqs/n_scenarios_out
+        return freqs
+
+        
     def compare_sols_lst(
         self, inst, sampler, sols, labels, n_scenarios
     ):
@@ -200,6 +211,10 @@ class Tester():
                 instance,
                 n_scenarios=n_scenarios_out
             )
+            E_r=[]
+
+            E_r=self.compute_expected_reach(reachability_out, n_scenarios_out, dict_data["Order"])
+
             sols_vec=np.zeros(n_scenarios_out)
             for j in range(n_scenarios_out):
                 sol_out = self.apply_influence_model(
@@ -212,4 +227,4 @@ class Tester():
 
             # ans.append(sols_vec)
 
-        return ans
+        return ans, E_r
