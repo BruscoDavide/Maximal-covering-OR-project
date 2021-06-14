@@ -3,6 +3,7 @@ import os
 import time
 import logging
 import json
+from networkx.classes.function import nodes
 import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
@@ -211,9 +212,6 @@ class Tester():
                 instance,
                 n_scenarios=n_scenarios_out
             )
-            E_r=[]
-
-            E_r=self.compute_expected_reach(reachability_out, n_scenarios_out, dict_data["Order"])
 
             sols_vec=np.zeros(n_scenarios_out)
             for j in range(n_scenarios_out):
@@ -224,7 +222,38 @@ class Tester():
                 sols_vec[j]=sol_out
                 ans.append(sol_out)
 
+        return ans
 
-            # ans.append(sols_vec)
 
-        return ans, E_r
+
+    def r_bar_evaluation(self, sampler, instance, n_scenarios, dict_data, tresh):
+        
+        reachability = sampler.reachability_generation(
+            instance,
+            n_scenarios
+        )
+
+        nods=range(dict_data["Order"])
+        freqs=np.zeros([dict_data["Order"], dict_data["Order"]])
+        #compute the relative frequencies of each reach node
+        for w in range(n_scenarios):
+            reach=reachability[w]
+            for j in nods:
+                for i in reach[j]:
+                    freqs[j][i]+=1
+            
+        freqs=freqs/n_scenarios
+        
+        R_bar=[]
+        for j in nods:
+            R_bar.append([])
+            for i in nods:
+                if freqs[j][i]>tresh:
+                    R_bar[j].append(i)
+
+
+        return R_bar
+
+
+
+

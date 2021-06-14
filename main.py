@@ -8,7 +8,10 @@ from simulator.tester import Tester
 from solver.LargeScaleInfluence import LargeScaleInfluence
 from heuristic.FirstHeuristic import FirstHeuristic
 from solver.sampler import Sampler
-from utility.plot_results import plot_comparison_hist
+from utility.plot_results import plot_comparison_hist, box_plots
+
+import matplotlib.pyplot as plt
+
 
 # np.random.seed(0)
 
@@ -59,76 +62,90 @@ if __name__ == '__main__':
     print(of_heu, sol_heu, comp_time)
 
 
-    #in sample: compara objective function di entrambe le soluzioni
-
-    #out of sample: compariamo usando un campione molto più grande
-    #usare numero di scenari molto più grandi rispetto a in sample
-    #genero degli scenari per gurobi
-    #genero altri scenari per l'euristica
-    #nell'out of sample prendo la soluzione dei seed, e uso quelli per vedere quanti ne sono influenzati
-    
-    
-    #per il valore atteso (per ogni variabile aleatoria mettiamo il suo valore atteso)
-    #determinare il valore atteso dei nodi che influenzano
-    
-
-    # mean_reward = sam.sample_ev(
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
-    # print(mean_reward)
-
-    # prb = SimpleKnapsack()
-    # of_exact, sol_exact, comp_time_exact = prb.solve(
-    #     dict_data,
-    #     reward,
-    #     n_scenarios,
-    #     verbose=True
-    # )
-    # print(of_exact, sol_exact, comp_time_exact)
-
     # COMPARISON:
     # in sample stability
     test = Tester()
-    n_scenarios_in = 100
-    n_repetitions = 1000
+    # n_scenarios_in = 10
+    # n_repetitions = 100
 
-    of_grblist=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    # of_grblist=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
 
-    print("List of sols gurobi: "+str(of_grblist))
+    # print("List of sols gurobi: "+str(of_grblist))
 
-    of_heulist=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    # of_heulist=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
 
-    print("List of sols heuristic: "+str(of_heulist))
+    # print("List of sols heuristic: "+str(of_heulist))
 
-    plot_comparison_hist(
-            [of_grblist, of_heulist],
-            ["Exact", "Heuristic"],
-            ['red', 'blue'],
-            "E[nodes_influenced]", "occurencies", 0
+
+
+    # plot_comparison_hist(
+    #         [of_grblist, of_heulist],
+    #         ["Exact", "Heuristic"],
+    #         ['red', 'blue'],
+    #         "E[nodes_influenced]", "occurencies", 0
+    #     )
+
+    # #COMPARISON:
+    # #out of sample stability
+
+
+    # n_scenarios_in = 10
+    # n_scenarios_out = 100
+    # n_repetitions = 10
+
+    # E_inf_grblist=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
+
+    # E_inf_heulist=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
+
+
+    # plot_comparison_hist(
+    #     [E_inf_grblist, E_inf_heulist],
+    #     ["Exact", "Heuristic"],
+    #     ['red', 'blue'],
+    #     "E[nodes_influenced]", "occurencies", 1
+    # )
+
+    #VSS solution
+
+    #First evaluate Rbar(i)
+
+    # tresh=np.arange(0,1,0.1)
+    VSS_rho_box=[]
+    tresh=[0.71]
+    for i in range(len(tresh)):
+        VSS_rho_box.append([])
+        VSS_rho_box[i].append(of_exact)
+        VSS_rho_box[i].append(of_heu)
+        n_scenarios=100
+
+        R_bar=test.r_bar_evaluation(
+            sam, 
+            inst, 
+            n_scenarios, 
+            dict_data,
+            tresh[i]
+            )
+
+
+        n_scenarios=1
+
+        of_exact_d, sol_exact_d, comp_time_exact_d = prb.solve_deterministic(
+            dict_data,
+            R_bar,
+            verbose = False
         )
+        # print(of_exact_d, sol_exact_d, comp_time_exact_d)
+        VSS_rho_box[i].append(of_exact_d)
 
-    #COMPARISON:
-    #out of sample stability
+        of_heu_d, sol_heu_d, comp_time_d = heu1.solve_deterministic(
+            dict_data,
+            R_bar
+        )
+     
+        # print(of_heu_d, sol_heu_d, comp_time_d)
+        VSS_rho_box[i].append(of_heu_d)
 
-
-    n_scenarios_in = 100
-    n_scenarios_out = 1000
-    n_repetitions = 100
-
-    E_inf_grblist, E_r=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
-
-    E_inf_heulist,_=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
-
-
-    plot_comparison_hist(
-        [E_inf_grblist, E_inf_heulist],
-        ["Exact", "Heuristic"],
-        ['red', 'blue'],
-        "E[nodes_influenced]", "occurencies", 1
-    )
-
-
+    box_plots(VSS_rho_box)
 
     '''
     tipo qua definiamo il numero di prove che vogliamo fare.
@@ -137,53 +154,38 @@ if __name__ == '__main__':
     Per aggiungere un po' di spicy, possiamo definire un seed all'interno di sampler cosi' ogni volta che 
     creiamo una reachability matrix, ci viene un po' diversa e abbiamo piu' stocasticita'
     '''
-    # reward_1 = sam.sample_stoch( 
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
+
     '''
     poi con quella reachability ed il set Z (sol_exact), facciamo la prova ed espandiamo l'influenza.
     Cosa importante in questo caso, non facciamo piu' la media su tutti i scenari, ma si prende ogni scenario
     in parte, si fa la sua espansione di influenza, ci si salva il numero di nodi attivati in una lista 
     e poi si plotta alla fine l'istogramma
     '''
-    # ris1 = test.solve_second_stages(
-    #     inst,
-    #     sol_exact,
-    #     n_scenarios,
-    #     reward_1
-    # )
-    # reward_2 = sam.sample_stoch(
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
-    # ris2 = test.solve_second_stages(
-    #     inst,
-    #     sol_exact,
-    #     n_scenarios,
-    #     reward_2
-    # )
+
     """
     per ogni prova ci salviamo i risultati, immagino qualcosa come il numero di nodi attivati e ne tracciamo un 
     istogramma, poi le paragoniamo.
     Si spera le distribuzioni vengano simili
     la cosa che mi crea qualche dubbio e' che questo ragionamento e' molto simile a cio' che si fa per la sample stability e non capisco bene la differenza
     tra i due approcci
+    
+
+
+    in sample: compara objective function di entrambe le soluzioni
+
+    out of sample: compariamo usando un campione molto più grande
+    usare numero di scenari molto più grandi rispetto a in sample
+    genero degli scenari per gurobi
+    genero altri scenari per l'euristica
+    nell'out of sample prendo la soluzione dei seed, e uso quelli per vedere quanti ne sono influenzati
+    
+    
+    per il valore atteso (per ogni variabile aleatoria mettiamo il suo valore atteso)
+    determinare il valore atteso dei nodi che influenzano
     """
-    # plot_comparison_hist(
-    #     [ris1, ris2],
-    #     ["run1", "run2"],
-    #     ['red', 'blue'],
-    #     "profit", "occurencies"
-    # )
 
-    '''
-    heu = SimpleHeu(2)
-    of_heu, sol_heu, comp_time_heu = heu.solve(
-        dict_data
-    )
-    print(of_heu, sol_heu, comp_time_heu)
 
+    
     # printing results of a file
     file_output = open(
         "./results/exp_general_table.csv",
@@ -191,10 +193,10 @@ if __name__ == '__main__':
     )
     file_output.write("method, of, sol, time\n")
     file_output.write("{}, {}, {}, {}\n".format(
-        "heu", of_heu, sol_heu, comp_time_heu
+        "heu", of_heu, sol_heu, comp_time
     ))
     file_output.write("{}, {}, {}, {}\n".format(
         "exact", of_exact, sol_exact, comp_time_exact
     ))
     file_output.close()
-    '''
+    
