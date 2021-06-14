@@ -65,25 +65,39 @@ if __name__ == '__main__':
     # COMPARISON:
     # in sample stability
     test = Tester()
-    # n_scenarios_in = 10
-    # n_repetitions = 100
+    n_scenarios_in = 30
+    n_repetitions = 100
 
-    # of_grblist=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
 
-    # print("List of sols gurobi: "+str(of_grblist))
+    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    
+    labels=range(1,n_scenarios_in+1)
 
-    # of_heulist=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    box_plots(
+            of_grblist, 
+            labels,
+            'Repetitions',
+            "OF",
+            "OF value exact vs. number of repetitions"
+            )
 
-    # print("List of sols heuristic: "+str(of_heulist))
+    box_plots(
+            of_heulist, 
+            labels,
+            'Repetitions',
+            "OF",
+            "OF value heuristic vs. number of repetitions"
+            )
 
 
 
-    # plot_comparison_hist(
-    #         [of_grblist, of_heulist],
-    #         ["Exact", "Heuristic"],
-    #         ['red', 'blue'],
-    #         "E[nodes_influenced]", "occurencies", 0
-    #     )
+    plot_comparison_hist(
+            [of_grblist, of_heulist],
+            ["Exact", "Heuristic"],
+            ['red', 'blue'],
+            "E[nodes_influenced]", "occurencies", 0
+        )
 
     # #COMPARISON:
     # #out of sample stability
@@ -107,45 +121,25 @@ if __name__ == '__main__':
 
     #VSS solution
 
-    #First evaluate Rbar(i)
-
-    # tresh=np.arange(0,1,0.1)
-    VSS_rho_box=[]
-    tresh=[0.71]
-    for i in range(len(tresh)):
-        VSS_rho_box.append([])
-        VSS_rho_box[i].append(of_exact)
-        VSS_rho_box[i].append(of_heu)
-        n_scenarios=100
-
-        R_bar=test.r_bar_evaluation(
-            sam, 
-            inst, 
-            n_scenarios, 
-            dict_data,
-            tresh[i]
-            )
-
-
-        n_scenarios=1
-
-        of_exact_d, sol_exact_d, comp_time_exact_d = prb.solve_deterministic(
-            dict_data,
-            R_bar,
-            verbose = False
-        )
-        # print(of_exact_d, sol_exact_d, comp_time_exact_d)
-        VSS_rho_box[i].append(of_exact_d)
-
-        of_heu_d, sol_heu_d, comp_time_d = heu1.solve_deterministic(
-            dict_data,
-            R_bar
-        )
-     
-        # print(of_heu_d, sol_heu_d, comp_time_d)
-        VSS_rho_box[i].append(of_heu_d)
-
-    box_plots(VSS_rho_box)
+    # tresh_res=0.05
+    # VSS_rho_sol, tresh=test.VSS_solve(
+    #     tresh_res,
+    #     [of_exact, of_heu],
+    #     prb,
+    #     heu1,
+    #     dict_data,
+    #     sam,
+    #     inst
+    # )
+    
+    # labels=np.around(tresh, 2)
+    # box_plots(
+    #     VSS_rho_sol, 
+    #     labels,
+    #     r'$\rho$',
+    #     "VSS",
+    #     "VSS value vs. treshold "r"$\rho$"
+    #     )
 
     '''
     tipo qua definiamo il numero di prove che vogliamo fare.
