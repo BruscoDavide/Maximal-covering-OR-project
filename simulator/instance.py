@@ -70,26 +70,29 @@ def random_graph(order, graph_seed):
 
     return copy
 
-
 def konect_graph(fp):
-    konnect_g = nx.DiGraph()
-    node_list = []
-
-    for line in fp:
-        l = line.split()
-        if str(int(l[0])-1) not in node_list:
-            konnect_g.add_node(str(int(l[0])-1))
-        if str(int(l[1])-1) not in node_list:
-            konnect_g.add_node(str(int(l[0])-1))
-        konnect_g.add_edge(str(int(l[0])-1),str(int(l[1])-1))
+        konnect_g = nx.DiGraph()
+        node_list = []
+    
+        for line in fp:
+            l = line.split()
+            if int(l[0])-1 not in node_list:
+                konnect_g.add_node(int(l[0])-1)
+            if int(l[1])-1 not in node_list:
+                konnect_g.add_node(int(l[0])-1)
+            konnect_g.add_edge(int(l[0])-1,int(l[1])-1)
+            
         
-    
-    konnect_g = assign_weights(konnect_g)  
-    
-    return konnect_g, konnect_g.order() 
+        konnect_g = assign_weights(konnect_g)  
+        
+        return konnect_g, konnect_g.order() 
+
 
 
 class Instance():
+    
+    
+    
     def __init__(self, sim_setting):
         logging.info("starting simulation...")
         self.graph_order = sim_setting['Graph_Order']
@@ -97,14 +100,6 @@ class Instance():
         self.graph_seed=sim_setting['Graph_seed_generation']
         self.fname=sim_setting['File_Name_Graph']
         
-        # self.g=generate_graph(self.fname)
-
-        # self.g=generate_simple(self.graph_order)
-
-        # self.graph_order = self.g.order
-
-
-        # self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
         try:
             if sim_setting["Graph_type"]=='curated':
                 self.g, nodes=curated_graph()
@@ -125,6 +120,11 @@ class Instance():
         logging.info(f"Seed of the graph: {self.graph_seed}")
         logging.info("simulation end")
 
+
+
+    
+    
+    
     def get_data(self):
         logging.info("getting data from instance...")
         return {

@@ -37,6 +37,7 @@ if __name__ == '__main__':
     dict_data = inst.get_data()
    # print(dict_data)
     
+   
     # Reward generation
     n_scenarios = 10
     reachability = sam.reachability_generation(

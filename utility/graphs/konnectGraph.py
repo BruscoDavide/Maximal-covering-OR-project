@@ -41,22 +41,24 @@ node_list = []
 
 for line in fp:
     l = line.split()
-    if l[0] not in node_list:
-        konnect_g.add_node(l[0])
-    if l[1] not in node_list:
-        konnect_g.add_node(l[0])
-    konnect_g.add_edge(l[0],l[1])
+    if str(int(l[0])-1) not in node_list:
+        konnect_g.add_node(str(int(l[0])-1))
+    if str(int(l[1])-1) not in node_list:
+        konnect_g.add_node(str(int(l[0])-1))
+    konnect_g.add_edge(str(int(l[0])-1),str(int(l[1])-1))
     
 konnect_g = assign_weights(konnect_g)
-pos = nx.spring_layout(konnect_g)  # positions for all nodes
 
-# nodes
-nx.draw_networkx_nodes(konnect_g, pos, node_size=400)
-nx.draw_networkx_edges(konnect_g, pos)
-nx.draw_networkx_labels(konnect_g, pos, font_size=20, font_family="sans-serif")
+ciaomamma=konnect_g.predecessors(0)
+# pos = nx.spring_layout(konnect_g)  # positions for all nodes
 
-plt.axis("off")
-plt.show()
+# # nodes
+# nx.draw_networkx_nodes(konnect_g, pos, node_size=400)
+# nx.draw_networkx_edges(konnect_g, pos)
+# nx.draw_networkx_labels(konnect_g, pos, font_size=20, font_family="sans-serif")
+
+# plt.axis("off")
+# plt.show()
     
 
     
