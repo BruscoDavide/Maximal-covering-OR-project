@@ -33,12 +33,23 @@ def box_plots(values, labelled, x_label, y_label, t_itle):
     pyplot.savefig(f"./results/box_plot "+t_itle+".png")
     pyplot.close()
  
-def bar_plots(values, labelled, x_label, y_label, t_itle):
+def bar_plots(values, labelled, x_label, y_label, t_itle, VSS_best=None):
     means = []
     variances = []
-    for i in values:
-        means.append(np.mean(i))
-        variances.append(np.var(i))
+    if VSS_best==None:
+        for i in values:
+            means.append(np.mean(i))
+            variances.append((np.var(i))**0.5)
+    else:
+        
+        variances=[]
+        for i in values:
+            sums=0
+            means.append(np.mean(i))
+            for j in i:
+                sums+=(j-VSS_best)**2
+            sums=sums/len(i)
+            variances.append((sums)**0.5)
 
     pyplot.errorbar(labelled, means, yerr=variances, linestyle='None', marker='o', ecolor='r', color='k')
     pyplot.xlabel(x_label)

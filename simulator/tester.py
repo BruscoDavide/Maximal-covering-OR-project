@@ -270,7 +270,21 @@ class Tester():
         
             # print(of_heu_d, sol_heu_d, comp_time_d)
             VSS_rho_box[i].append(of_heu_d)
+            
+        varbs=[]
+        for i in range(len(VSS_rho_box)):
+            varbs.append(np.var(VSS_rho_box[i]))
+            
+        min_var=np.argmin(varbs)
+        
+        best_VSS=VSS_rho_box[min_var][2:3]
+        
+        best_VSS=np.mean(best_VSS)
+        
+        best_tresh=tresh[min_var]
+        
+        
 
-        return VSS_rho_box, tresh
+        return VSS_rho_box, tresh, best_VSS, best_tresh
 
 

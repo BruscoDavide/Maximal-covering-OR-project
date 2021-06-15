@@ -2,5 +2,7 @@
 	"Graph_Order": 50,
 	"Seed_card": 2,
 	"Graph_seed_generation" : 42,
-	"File_Name_Graph" : "./dataset/librec-filmtrust-trust/out.txt"
+	"Graph_type" : "konect",
+	"File_Name_Graph" : "out.txt",
+	"fp" : []
 }

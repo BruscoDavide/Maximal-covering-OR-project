@@ -30,6 +30,9 @@ if __name__ == '__main__':
 
     sam = Sampler()
 
+
+    if sim_setting["Graph_type"]=='konect':
+        sim_setting["fp"] =open("./dataset/librec-filmtrust-trust/out.txt",'r')
     inst = Instance(sim_setting)
     dict_data = inst.get_data()
    # print(dict_data)
@@ -61,34 +64,64 @@ if __name__ == '__main__':
 
     print(of_heu, sol_heu, comp_time)
 
+        
+
+    
+
 
     # COMPARISON:
     # in sample stability
     test = Tester()
-    # n_scenarios_in = 30
-    # n_repetitions = 100
-
-    # of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
-
-    # of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
     
-    # labels=range(1,n_scenarios_in+1)
+    #VSS solution
+    tresh_res=0.05
+    VSS_rho_sol, tresh, VSS_best, tresh_best=test.VSS_solve(
+        tresh_res,
+        [of_exact, of_heu],
+        prb,
+        heu1,
+        dict_data,
+        sam,
+        inst
+    )
+    
+    
+    
 
-    # bar_plots(
-    #         of_ex_boxes, 
-    #         labels,
-    #         'Repetitions',
-    #         "OF",
-    #         "OF value exact vs. number of repetitions"
-    #         )
+    labels=np.around(tresh, 2)
+    box_plots(
+        VSS_rho_sol, 
+        labels,
+        r'$\rho$',
+        "VSS",
+        "VSS_rho"
+        )
 
-    # bar_plots(
-    #         of_heu_boxes, 
-    #         labels,
-    #         'Repetitions',
-    #         "OF",
-    #         "OF value heuristic vs. number of repetitions"
-    #         )
+
+    n_scenarios_in = 30
+    n_repetitions = 100
+
+    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+
+    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    
+    labels=range(1,n_scenarios_in+1)
+
+    bar_plots(
+            of_ex_boxes, 
+            labels,
+            'Repetitions',
+            "OF",
+            "OF value exact vs. number of repetitions"
+            )
+
+    bar_plots(
+            of_heu_boxes, 
+            labels,
+            'Repetitions',
+            "OF",
+            "OF value heuristic vs. number of repetitions"
+            )
 
 
 
@@ -104,19 +137,23 @@ if __name__ == '__main__':
 
 
     n_scenarios_in = 10
-    n_scenarios_out = 1000
+    n_scenarios_out = 20
     n_repetitions = 10
     labels=range(1, n_scenarios_out+1)
     E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
 
     E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
 
+
+
+
     bar_plots(
             E_ex_boxes, 
             labels,
             'scenarios',
             "Influenced nodes",
-            "OutOfSampleGrb"
+            "OutOfSampleGrb",
+            VSS_best
             )
 
     bar_plots(
@@ -124,38 +161,20 @@ if __name__ == '__main__':
             labels,
             'scenarios',
             "Influenced nodes",
-            "OutOfSampleHeu"
+            "OutOfSampleHeu",
+            VSS_best
             )
 
 
-    plot_comparison_hist(
-        [E_inf_grblist, E_inf_heulist],
-        ["Exact", "Heuristic"],
-        ['red', 'blue'],
-        "E[nodes_influenced]", "occurencies", 1
-    )
+    # plot_comparison_hist(
+    #     [E_inf_grblist, E_inf_heulist],
+    #     ["Exact", "Heuristic"],
+    #     ['red', 'blue'],
+    #     "E[nodes_influenced]", "occurencies", 1
+    # )
 
-    #VSS solution
 
-    tresh_res=0.05
-    VSS_rho_sol, tresh=test.VSS_solve(
-        tresh_res,
-        [of_exact, of_heu],
-        prb,
-        heu1,
-        dict_data,
-        sam,
-        inst
-    )
     
-    labels=np.around(tresh, 2)
-    box_plots(
-        VSS_rho_sol, 
-        labels,
-        r'$\rho$',
-        "VSS",
-        "VSS_rho"
-        )
 
     '''
     tipo qua definiamo il numero di prove che vogliamo fare.

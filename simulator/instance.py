@@ -2,6 +2,8 @@
 import logging
 import numpy as np
 import networkx as nx
+import random
+import sys
 
 def assign_weights(g):
     maxim=0
@@ -23,32 +25,69 @@ def assign_weights(g):
             g[j][i]['weight']=g[j][i]['weight']/maxim
     return g
 
-def generate_graph(fname):
-    fp=open(fname, 'r')
-    Lines=fp.readlines()
-    vec=[]
+def curated_graph():
+    orders = 14
+    curated = nx.DiGraph()
+    for i in range(orders):
+        curated.add_node(i)
+        
+    main_nodes = [2,4] 
+    nodes = np.arange(0,orders,1)
+    nodes = list(nodes)
 
-    for line in Lines:
-        x=line.split()
-        vec.append([int(x[0])-1, int(x[1])-1])
+    for i in range(len(main_nodes)):
+        nodes.remove(main_nodes[i])
+    random.shuffle(nodes)
 
-    g=nx.DiGraph()
+    curated.add_edge(main_nodes[0], main_nodes[1])
+    curated.add_edge(main_nodes[1], main_nodes[0])
 
-    for i in range(len(vec)):
-        from_node=vec[i][0]
-        to_node=vec[i][1]
-        g.add_edge(from_node, to_node)
+    neigh_per_node = 6
+    for core in main_nodes:
+        for i in range(neigh_per_node):
+            curated.add_edge(core, nodes[0])
+            nodes.remove(nodes[0])
+            
+    curated = assign_weights(curated)
+    return curated, orders
 
-    return g
+def random_graph(order, graph_seed):
+    g = nx.generators.directed.scale_free_graph(order, 0.01, 0.39,0.6, 3, 4, seed=graph_seed)
+    ad = g._adj
+
+    copy = nx.DiGraph()
+    for node in g.nodes:
+        copy.add_node(node)
+        
+    for keys in ad:
+        ad_row = ad[keys]
+        for elem in ad_row:
+            copy.add_edge(keys, elem)
+        
+    ad_copy = copy._adj
+            
+    copy = assign_weights(copy)
+
+    return copy
 
 
-def generate_simple(N):
-    g=nx.DiGraph()
-    for i in range(0, N):
-        if i != 9:
-            g.add_edge(9,i)
+def konect_graph(fp):
+    konnect_g = nx.DiGraph()
+    node_list = []
 
-    return g    
+    for line in fp:
+        l = line.split()
+        if str(int(l[0])-1) not in node_list:
+            konnect_g.add_node(str(int(l[0])-1))
+        if str(int(l[1])-1) not in node_list:
+            konnect_g.add_node(str(int(l[0])-1))
+        konnect_g.add_edge(str(int(l[0])-1),str(int(l[1])-1))
+        
+    
+    konnect_g = assign_weights(konnect_g)  
+    
+    return konnect_g, konnect_g.order() 
+
 
 class Instance():
     def __init__(self, sim_setting):
@@ -65,13 +104,19 @@ class Instance():
         # self.graph_order = self.g.order
 
 
-        self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
-
-
-
-
-        
-        self.g=assign_weights(self.g)
+        # self.g=nx.erdos_renyi_graph(sim_setting['Graph_Order'], 0.4, seed=self.graph_seed, directed=True)
+        try:
+            if sim_setting["Graph_type"]=='curated':
+                self.g, nodes=curated_graph()
+                self.graph_order=nodes
+            elif sim_setting["Graph_type"]=='random':
+                self.g=random_graph(sim_setting['Graph_Order'], self.graph_seed)
+            elif sim_setting["Graph_type"]=='konect':
+                self.g, nodes=konect_graph(sim_setting["fp"])
+                self.graph_order=nodes
+        except:
+            print("No graph type exists with specified type")
+            sys.exit(1)
         self.adj_mat=self.g._adj
 
         logging.info(f"Order of the graph: {self.graph_order}")
