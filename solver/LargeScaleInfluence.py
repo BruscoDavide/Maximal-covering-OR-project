@@ -40,16 +40,11 @@ class LargeScaleInfluence():
 
 
         p=1/n_scenarios
-        
-        #obj_funct = gp.quicksum(p * gp.quicksum(X[i][j] for j in n_scenarios) for i in nodes)
 
         obj_funct = 0
         for w in scenarios:
             obj_funct += p * gp.quicksum(X[i,w] for i in nodes)
             
-
-
-        
         model.setObjective(obj_funct, GRB.MAXIMIZE)
 
         model.addConstr(
@@ -64,18 +59,6 @@ class LargeScaleInfluence():
                             X[i,w] <= gp.quicksum(Z[j] for j in reachability[w][i])
                 )
 
-        '''
-        for s in scenarios:
-            model.addConstr(
-                gp.quicksum(dict_data['sizes_ss'][i] * Y[i, s] for i in ) <= dict_data['max_size_ss'],
-                f"volume_limit_ss_{s}"
-            )
-        for i in items:
-            model.addConstr(
-                gp.quicksum(Y[i, s] for s in scenarios) <= n_scenarios * X[i],
-                f"link_X_Y_for_item_{i}"
-            )
-            '''
         model.update()
         if gap:
             model.setParam('MIPgap', gap)
@@ -134,17 +117,9 @@ class LargeScaleInfluence():
             name='Z'
         )
 
-
-
         p=1
-        
-        #obj_funct = gp.quicksum(p * gp.quicksum(X[i][j] for j in n_scenarios) for i in nodes)
-        
         obj_funct = p * gp.quicksum(X[i] for i in nodes)
             
-
-
-        
         model.setObjective(obj_funct, GRB.MAXIMIZE)
 
         model.addConstr(
@@ -159,18 +134,6 @@ class LargeScaleInfluence():
                         X[i] <= gp.quicksum(Z[j] for j in reachability[i])
             )
 
-        '''
-        for s in scenarios:
-            model.addConstr(
-                gp.quicksum(dict_data['sizes_ss'][i] * Y[i, s] for i in ) <= dict_data['max_size_ss'],
-                f"volume_limit_ss_{s}"
-            )
-        for i in items:
-            model.addConstr(
-                gp.quicksum(Y[i, s] for s in scenarios) <= n_scenarios * X[i],
-                f"link_X_Y_for_item_{i}"
-            )
-            '''
         model.update()
         if gap:
             model.setParam('MIPgap', gap)

@@ -87,6 +87,8 @@ class Tester():
     def in_sample_stability(self, problem, sampler, instance, n_repetitions, n_scenarios_sol, dict_data):
         ans = []
         boxes_data=[]
+        #qua repetitions non si usa piu', si fa andare il programma per n_scnarios_sol per vedere
+        #la convergenza in base agli scenari
         for i in range(1,n_scenarios_sol+1):
             
             reachability = sampler.reachability_generation(
