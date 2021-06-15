@@ -29,19 +29,21 @@ def box_plots(values, labelled, x_label, y_label, t_itle):
     pyplot.xlabel(x_label)
     pyplot.ylabel(y_label)
     pyplot.title(t_itle)
+    pyplot.grid()
     pyplot.savefig(f"./results/box_plot "+t_itle+".png")
     pyplot.close()
  
 def bar_plots(values, labelled, x_label, y_label, t_itle):
     means = []
-    vars = []
+    variances = []
     for i in values:
         means.append(np.mean(i))
-        vars.append(np.var(i))
+        variances.append(np.var(i))
 
-    pyplot.errorbar(means, vars, labels = labelled)
+    pyplot.errorbar(labelled, means, yerr=variances, linestyle='None', marker='o', ecolor='r', color='k')
     pyplot.xlabel(x_label)
     pyplot.ylabel(y_label)
     pyplot.title(t_itle)
-    pyplot.savefig(f"./results/box_plot "+t_itle+".png")
+    pyplot.grid()
+    pyplot.savefig(f"./results/bar_plot "+t_itle+".png")
     pyplot.close()

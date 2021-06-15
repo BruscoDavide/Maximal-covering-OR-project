@@ -165,36 +165,41 @@ class Tester():
     """
     def out_of_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out, dict_data):
         ans = []
-        for i in range(n_repertions):
+        
 
-            reachability = sampler.reachability_generation(
-                instance,
-                n_scenarios=n_scenarios_sol
+        reachability = sampler.reachability_generation(
+            instance,
+            n_scenarios=n_scenarios_sol
+        )
+        of, sol, comp_time = problem.solve(
+            dict_data,
+            reachability,
+            n_scenarios_sol
+        )
+        
+
+        #now out of check
+        
+        reachability_out = sampler.reachability_generation(
+            instance,
+            n_scenarios=n_scenarios_out
+        )
+        
+        boxes_data=[]
+        sols_vec=np.zeros(n_scenarios_out)
+        for j in range(n_scenarios_out):
+            sol_out = self.apply_influence_model(
+                instance, sol,
+                n_scenarios_out, reachability_out[j], dict_data
             )
-            of, sol, comp_time = problem.solve(
-                dict_data,
-                reachability,
-                n_scenarios_sol
-            )
-            
+            sols_vec[j]=sol_out
+            ans.append(sol_out)
+            what=np.zeros(len(ans))
+            for m in range(len(what)):
+                what[m]=float(ans[m])
+            boxes_data.append(what)
 
-            #now out of check
-            
-            reachability_out = sampler.reachability_generation(
-                instance,
-                n_scenarios=n_scenarios_out
-            )
-
-            sols_vec=np.zeros(n_scenarios_out)
-            for j in range(n_scenarios_out):
-                sol_out = self.apply_influence_model(
-                    instance, sol,
-                    n_scenarios_out, reachability_out[j], dict_data
-                )
-                sols_vec[j]=sol_out
-                ans.append(sol_out)
-
-        return ans
+        return ans, boxes_data
 
 
 

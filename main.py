@@ -8,7 +8,7 @@ from simulator.tester import Tester
 from solver.LargeScaleInfluence import LargeScaleInfluence
 from heuristic.FirstHeuristic import FirstHeuristic
 from solver.sampler import Sampler
-from utility.plot_results import plot_comparison_hist, box_plots
+from utility.plot_results import plot_comparison_hist, box_plots, bar_plots
 
 import matplotlib.pyplot as plt
 
@@ -65,81 +65,97 @@ if __name__ == '__main__':
     # COMPARISON:
     # in sample stability
     test = Tester()
-    n_scenarios_in = 30
-    n_repetitions = 100
+    # n_scenarios_in = 30
+    # n_repetitions = 100
 
-    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    # of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
 
-    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    # of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
     
-    labels=range(1,n_scenarios_in+1)
+    # labels=range(1,n_scenarios_in+1)
 
-    box_plots(
-            of_grblist, 
-            labels,
-            'Repetitions',
-            "OF",
-            "OF value exact vs. number of repetitions"
-            )
+    # bar_plots(
+    #         of_ex_boxes, 
+    #         labels,
+    #         'Repetitions',
+    #         "OF",
+    #         "OF value exact vs. number of repetitions"
+    #         )
 
-    box_plots(
-            of_heulist, 
-            labels,
-            'Repetitions',
-            "OF",
-            "OF value heuristic vs. number of repetitions"
-            )
+    # bar_plots(
+    #         of_heu_boxes, 
+    #         labels,
+    #         'Repetitions',
+    #         "OF",
+    #         "OF value heuristic vs. number of repetitions"
+    #         )
 
 
 
-    plot_comparison_hist(
-            [of_grblist, of_heulist],
-            ["Exact", "Heuristic"],
-            ['red', 'blue'],
-            "E[nodes_influenced]", "occurencies", 0
-        )
+    # plot_comparison_hist(
+    #         [of_grblist, of_heulist],
+    #         ["Exact", "Heuristic"],
+    #         ['red', 'blue'],
+    #         "E[nodes_influenced]", "occurencies", 0
+    #     )
 
     # #COMPARISON:
     # #out of sample stability
 
 
-    # n_scenarios_in = 10
-    # n_scenarios_out = 100
-    # n_repetitions = 10
+    n_scenarios_in = 10
+    n_scenarios_out = 1000
+    n_repetitions = 10
+    labels=range(1, n_scenarios_out+1)
+    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
 
-    # E_inf_grblist=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
+    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
 
-    # E_inf_heulist=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
+    bar_plots(
+            E_ex_boxes, 
+            labels,
+            'scenarios',
+            "Influenced nodes",
+            "OutOfSampleGrb"
+            )
+
+    bar_plots(
+            E_heu_boxes, 
+            labels,
+            'scenarios',
+            "Influenced nodes",
+            "OutOfSampleHeu"
+            )
 
 
-    # plot_comparison_hist(
-    #     [E_inf_grblist, E_inf_heulist],
-    #     ["Exact", "Heuristic"],
-    #     ['red', 'blue'],
-    #     "E[nodes_influenced]", "occurencies", 1
-    # )
+    plot_comparison_hist(
+        [E_inf_grblist, E_inf_heulist],
+        ["Exact", "Heuristic"],
+        ['red', 'blue'],
+        "E[nodes_influenced]", "occurencies", 1
+    )
 
     #VSS solution
 
-    # tresh_res=0.05
-    # VSS_rho_sol, tresh=test.VSS_solve(
-    #     tresh_res,
-    #     [of_exact, of_heu],
-    #     prb,
-    #     heu1,
-    #     dict_data,
-    #     sam,
-    #     inst
-    # )
+    tresh_res=0.05
+    VSS_rho_sol, tresh=test.VSS_solve(
+        tresh_res,
+        [of_exact, of_heu],
+        prb,
+        heu1,
+        dict_data,
+        sam,
+        inst
+    )
     
-    # labels=np.around(tresh, 2)
-    # box_plots(
-    #     VSS_rho_sol, 
-    #     labels,
-    #     r'$\rho$',
-    #     "VSS",
-    #     "VSS value vs. treshold "r"$\rho$"
-    #     )
+    labels=np.around(tresh, 2)
+    box_plots(
+        VSS_rho_sol, 
+        labels,
+        r'$\rho$',
+        "VSS",
+        "VSS_rho"
+        )
 
     '''
     tipo qua definiamo il numero di prove che vogliamo fare.
