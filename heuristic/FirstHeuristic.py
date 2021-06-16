@@ -111,13 +111,13 @@ class FirstHeuristic():
 
         ###############################
         asd = []
-        sol_z = []
+        sol_z_idx = []
         for i in zi:
             asd+=i
         freqs = collections.Counter(asd)
         zs = freqs.most_common(dict_data['K'])
         for k in zs:
-            sol_z.append(k[0])
+            sol_z_idx.append(k[0])
 
         ###############################
 
@@ -125,6 +125,9 @@ class FirstHeuristic():
         end = time.time()
 
         comp_time = end - start
+
+        sol_z = np.zeros([dict_data['Order']])
+        sol_z[sol_z_idx] = 1
         
         
         
