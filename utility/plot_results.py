@@ -28,14 +28,9 @@ def box_plots(values, labelled, x_label, y_label, t_itle, fname, n_repetitions, 
     # for i in range(len(values)):
     #     for j in range(len(values[0])):
     #         vals[j][i]=values[j][i]
-    vals=np.zeros([n_scen, n_repetitions])
-    for j in range(n_scen):    
-        ic=0
-        for i in values:
-            vals[j][ic]=i[j]
-            ic=ic+1
+    
         
-    pyplot.boxplot(vals, labels = labelled)
+    pyplot.boxplot(values, labels = labelled)
     pyplot.xlabel(x_label)
     pyplot.ylabel(y_label)
     pyplot.title(t_itle)

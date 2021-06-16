@@ -99,6 +99,7 @@ class Instance():
         self.K = sim_setting['Seed_card']
         self.graph_seed=sim_setting['Graph_seed_generation']
         self.fname=sim_setting['File_Name_Graph']
+        self.gname=sim_setting['Graph_type']
         
         try:
             if sim_setting["Graph_type"]=='curated':
@@ -132,6 +133,7 @@ class Instance():
             "K": self.K,
             "Seed": self.graph_seed,
             "Adj_mat": self.adj_mat,
-            "Graph" : self.g
+            "Graph" : self.g,
+            "gnam" : self.gname
             
         }

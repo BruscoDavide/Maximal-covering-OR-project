@@ -206,7 +206,7 @@ class Tester():
     def VSS_solve(self, tresh_res,  prb, heu1, dict_data, sam, inst, n_scen, n_scen_out, n_repetitions):
         tresh=np.arange(0,1,tresh_res)
         VSS_rho_box=[]
-        gap_tot=[]
+        gap_tot=np.zeros([len(tresh), n_repetitions])
         for f in range(n_repetitions):
             reachability = sam.reachability_generation(
                     inst,
@@ -217,7 +217,7 @@ class Tester():
                 reachability,
                 n_scen
             )
-            gap_tot.append([])
+            
             for i in range(len(tresh)):
                 VSS_rho_box.append([])
                 n_scenarios=1000
@@ -262,7 +262,7 @@ class Tester():
                 sol_det_perc=sol_out_det/dict_data["Order"]
 
                 gap_step=abs(meanans_perc-sol_det_perc)
-                gap_tot[f].append(gap_step)
+                gap_tot[i][f]=gap_step
 
 
             # print(of_exact_d, sol_exact_d, comp_time_exact_d)
@@ -288,9 +288,13 @@ class Tester():
         # best_VSS=np.mean(best_VSS)
         
         # best_tresh=tresh[min_var]
-        
-        
+        corr_ds=[]
+        for i in range(len(tresh)):
+            corr_ds.append([])
+            for j in range(n_repetitions):
+                corr_ds[i].append(gap_tot[i][j])
 
-        return gap_tot, tresh
+
+        return corr_ds, tresh
 
 

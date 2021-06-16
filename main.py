@@ -39,7 +39,7 @@ if __name__ == '__main__':
     
    
     # Reward generation
-    n_scenarios = 10
+    n_scenarios = 50
     reachability = sam.reachability_generation(
         inst,
         n_scenarios=n_scenarios
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
 
 
-    n_scenarios_in = 30
+    n_scenarios_in = 50
 
     of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data)
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
             'Scenarios',
             "OF",
             "OF value exact vs. number of scenarios",
-            "in_sample_grb", 0
+            "in_sample_grb_"+dict_data["gnam"], 0
             )
 
     bar_plots(
@@ -100,7 +100,7 @@ if __name__ == '__main__':
             'scenarios',
             "OF",
             "OF value heuristic vs. number of scenarios",
-            "in_sample_heu", 0
+            "in_sample_heu_"+dict_data["gnam"], 0
             )
 
 
@@ -116,8 +116,8 @@ if __name__ == '__main__':
     # #out of sample stability
 
 
-    n_scenarios_in = 30
-    n_scenarios_out = 100
+    n_scenarios_in = 50
+    n_scenarios_out = 200
     labels=range(1, n_scenarios_in+1)
     E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data)
 
@@ -132,7 +132,7 @@ if __name__ == '__main__':
             'Scenarios',
             "OF",
             "OF value exact vs. number of scenarios",
-            "out_of_sample_grb", 1
+            "out_of_sample_grb_"+dict_data["gnam"], 1
             )
 
     bar_plots(
@@ -141,7 +141,7 @@ if __name__ == '__main__':
             'Scenarios',
             "OF",
             "OF value heuristic vs. number of scenarios",
-            "out_of_sample_heu", 1
+            "out_of_sample_heu_"+dict_data["gnam"], 1
             )
 
 
@@ -153,9 +153,9 @@ if __name__ == '__main__':
     # )
 
 #VSS solution
-    n_scen_in=20
-    n_scen_out=100
-    n_repetitions=10
+    n_scen_in=50
+    n_scen_out=200
+    n_repetitions=100
     tresh_res=0.05
     VSS_tot, tresh=test.VSS_solve(
         tresh_res,
@@ -176,7 +176,7 @@ if __name__ == '__main__':
         r'$\rho$',
         "VSS",
         "VSS_rho",
-        "vssrho",
+        "vssrho_"+dict_data["gnam"],
         n_repetitions,
         n_scen_in
         )
