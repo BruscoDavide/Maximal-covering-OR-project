@@ -23,38 +23,39 @@ def plot_comparison_hist(values, labels, colors, x_label, y_label, indexes=0):
     pyplot.close()
 
 
-def box_plots(values, labelled, x_label, y_label, t_itle):
-
-    pyplot.boxplot(values, labels = labelled)
+def box_plots(values, labelled, x_label, y_label, t_itle, fname, n_repetitions, n_scen):
+    # vals=np.zeros([len(values[0]), len(values)])
+    # for i in range(len(values)):
+    #     for j in range(len(values[0])):
+    #         vals[j][i]=values[j][i]
+    vals=np.zeros([n_scen, n_repetitions])
+    for j in range(n_scen):    
+        ic=0
+        for i in values:
+            vals[j][ic]=i[j]
+            ic=ic+1
+        
+    pyplot.boxplot(vals, labels = labelled)
     pyplot.xlabel(x_label)
     pyplot.ylabel(y_label)
     pyplot.title(t_itle)
     pyplot.grid()
-    pyplot.savefig(f"./results/box_plot "+t_itle+".png")
+    pyplot.savefig(f"./results/box_plot_"+fname+".png")
     pyplot.close()
  
-def bar_plots(values, labelled, x_label, y_label, t_itle, VSS_best=None):
+def bar_plots(values, labelled, x_label, y_label, t_itle, fname, which_sample):
     means = []
     variances = []
-    if VSS_best==None:
-        for i in values:
-            means.append(np.mean(i))
-            variances.append((np.var(i))**0.5)
-    else:
-        
-        variances=[]
-        for i in values:
-            sums=0
-            means.append(np.mean(i))
-            for j in i:
-                sums+=(j-VSS_best)**2
-            sums=sums/len(i)
-            variances.append((sums)**0.5)
+    
+    for i in values:
+        means.append(np.mean(i))
+        variances.append((np.var(i))**0.5)
+  
 
     pyplot.errorbar(labelled, means, yerr=variances, linestyle='None', marker='o', ecolor='r', color='k')
     pyplot.xlabel(x_label)
     pyplot.ylabel(y_label)
     pyplot.title(t_itle)
     pyplot.grid()
-    pyplot.savefig(f"./results/bar_plot "+t_itle+".png")
+    pyplot.savefig(f"./results/bar_plot_"+fname+".png")
     pyplot.close()

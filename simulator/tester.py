@@ -21,39 +21,9 @@ class Tester():
     def __init__(self):
         pass
 
-    def compute_expected_reach(reachability_out, n_scenarios_out, n_nodes):
-        freqs=np.zeros(n_nodes)
-        for w in reachability_out:
-            for i in w:
-                for j in i:
-                    freqs[j]+=1
+    
 
-        freqs=freqs/n_scenarios_out
-        return freqs
-
-        
-    def compare_sols_lst(
-        self, inst, sampler, sols, labels, n_scenarios
-    ):
-
-        """
-        questo compare io non lo farei cosi', ma prenderei i due histogrammi e comparerei ogni nodo per vedere
-        lo scarto delle due barre.
-
-        """
-        ans_dict = {}
-        reward = sampler.sample_stoch(
-            inst,
-            n_scenarios=n_scenarios
-        )
-        for j in range(len(sols)):
-            profit_raw_data = self.solve_second_stages(
-                inst, sols[j],
-                n_scenarios, reward
-            )
-            ans_dict[labels[j]] = profit_raw_data
-
-        return ans_dict
+    
 
     #noi non abbiamo nessun second stage solution
     def apply_influence_model(
@@ -84,7 +54,7 @@ class Tester():
         return len(activated_set)
         
 
-    def in_sample_stability(self, problem, sampler, instance, n_repetitions, n_scenarios_sol, dict_data):
+    def in_sample_stability(self, problem, sampler, instance, n_scenarios_sol, dict_data):
         ans = []
         boxes_data=[]
         #qua repetitions non si usa piu', si fa andare il programma per n_scnarios_sol per vedere
@@ -163,41 +133,42 @@ class Tester():
     
     la prima la si fa in in sample stab, la seconda in out of sample stab
     """
-    def out_of_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out, dict_data):
-        ans = []
-        
-
-        reachability = sampler.reachability_generation(
-            instance,
-            n_scenarios=n_scenarios_sol
-        )
-        of, sol, comp_time = problem.solve(
-            dict_data,
-            reachability,
-            n_scenarios_sol
-        )
-        
-
-        #now out of check
-        
-        reachability_out = sampler.reachability_generation(
-            instance,
-            n_scenarios=n_scenarios_out
-        )
+    def out_of_sample_stability(self, problem, sampler, instance, n_scenarios_sol, n_scenarios_out, dict_data):
         
         boxes_data=[]
-        sols_vec=np.zeros(n_scenarios_out)
-        for j in range(n_scenarios_out):
-            sol_out = self.apply_influence_model(
-                instance, sol,
-                n_scenarios_out, reachability_out[j], dict_data
+        for i in range(1, n_scenarios_sol+1):
+            ans = []
+            reachability = sampler.reachability_generation(
+                instance,
+                n_scenarios=i
             )
-            sols_vec[j]=sol_out
-            ans.append(sol_out)
+            of, sol, comp_time = problem.solve(
+                dict_data,
+                reachability,
+                i
+            )
+            
+
+            #now out of check
+            
+            reachability_out = sampler.reachability_generation(
+                instance,
+                n_scenarios=n_scenarios_out
+            )
+            
+            boxes_data.append([])
+            sols_vec=np.zeros(n_scenarios_out)
+            for j in range(n_scenarios_out):
+                sol_out = self.apply_influence_model(
+                    instance, sol,
+                    n_scenarios_out, reachability_out[j], dict_data
+                )
+                sols_vec[j]=sol_out
+                ans.append(sol_out)
             what=np.zeros(len(ans))
             for m in range(len(what)):
                 what[m]=float(ans[m])
-            boxes_data.append(what)
+            boxes_data[i-1].append(what)
 
         return ans, boxes_data
 
@@ -232,59 +203,94 @@ class Tester():
         return R_bar
 
         
-    def VSS_solve(self, tresh_res, of_stoch, prb, heu1, dict_data, sam, inst):
+    def VSS_solve(self, tresh_res,  prb, heu1, dict_data, sam, inst, n_scen, n_scen_out, n_repetitions):
         tresh=np.arange(0,1,tresh_res)
         VSS_rho_box=[]
-        of_exact=of_stoch[0]
-        of_heu=of_stoch[1]
-        
-        for i in range(len(tresh)):
-            VSS_rho_box.append([])
-            VSS_rho_box[i].append(of_exact)
-            VSS_rho_box[i].append(of_heu)
-            n_scenarios=100
-
-            R_bar=self.r_bar_evaluation(
-                sam, 
-                inst, 
-                n_scenarios, 
+        gap_tot=[]
+        for f in range(n_repetitions):
+            reachability = sam.reachability_generation(
+                    inst,
+                    n_scenarios=n_scen
+                )
+            _, sol,_ = prb.solve(
                 dict_data,
-                tresh[i]
+                reachability,
+                n_scen
+            )
+            gap_tot.append([])
+            for i in range(len(tresh)):
+                VSS_rho_box.append([])
+                n_scenarios=1000
+
+                R_bar=self.r_bar_evaluation(
+                    sam, 
+                    inst, 
+                    n_scenarios, 
+                    dict_data,
+                    tresh[i]
+                    )
+
+                _, sol_det,_ = prb.solve_deterministic(
+                    dict_data,
+                    R_bar,
+                    verbose = False
                 )
 
+                reachability_out = sam.reachability_generation(
+                    inst,
+                    n_scenarios=n_scen_out
+                )
 
-            n_scenarios=1
+                ans=[]
+                for j in range(n_scen_out):
+                    sol_out = self.apply_influence_model(
+                        inst, sol,
+                        n_scen_out, reachability_out[j], dict_data
+                    )
+                    
+                    ans.append(sol_out)
 
-            of_exact_d, sol_exact_d, comp_time_exact_d = prb.solve_deterministic(
-                dict_data,
-                R_bar,
-                verbose = False
-            )
+                sol_out_det = self.apply_influence_model(
+                    inst,
+                    sol_det,
+                    1,
+                    R_bar,
+                    dict_data
+                )
+
+                meanans_perc=np.mean(ans)/dict_data["Order"]
+                sol_det_perc=sol_out_det/dict_data["Order"]
+
+                gap_step=abs(meanans_perc-sol_det_perc)
+                gap_tot[f].append(gap_step)
+
+
             # print(of_exact_d, sol_exact_d, comp_time_exact_d)
-            VSS_rho_box[i].append(of_exact_d)
+            # VSS_rho_box[i].append(of_exact_d)
 
-            of_heu_d, sol_heu_d, comp_time_d = heu1.solve_deterministic(
-                dict_data,
-                R_bar
-            )
+
+            # of_heu_d, sol_heu_d, comp_time_d = heu1.solve_deterministic(
+            #     dict_data,
+            #     R_bar
+            # )
         
             # print(of_heu_d, sol_heu_d, comp_time_d)
-            VSS_rho_box[i].append(of_heu_d)
             
-        varbs=[]
-        for i in range(len(VSS_rho_box)):
-            varbs.append(np.var(VSS_rho_box[i]))
             
-        min_var=np.argmin(varbs)
+        # varbs=[]
+        # for i in range(len(VSS_rho_box)):
+        #     varbs.append(np.var(VSS_rho_box[i]))
+            
+        # min_var=np.argmin(varbs)
         
-        best_VSS=VSS_rho_box[min_var][2:3]
+        # best_VSS=VSS_rho_box[min_var][2:3]
         
-        best_VSS=np.mean(best_VSS)
+        # best_VSS=np.mean(best_VSS)
         
-        best_tresh=tresh[min_var]
+        # best_tresh=tresh[min_var]
         
         
 
-        return VSS_rho_box, tresh, best_VSS, best_tresh
+        return gap_tot, tresh
 
 

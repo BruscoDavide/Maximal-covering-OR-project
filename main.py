@@ -74,54 +74,33 @@ if __name__ == '__main__':
     # in sample stability
     test = Tester()
     
-    #VSS solution
-    tresh_res=0.05
-    VSS_rho_sol, tresh, VSS_best, tresh_best=test.VSS_solve(
-        tresh_res,
-        [of_exact, of_heu],
-        prb,
-        heu1,
-        dict_data,
-        sam,
-        inst
-    )
-    
-    
-    
 
-    labels=np.around(tresh, 2)
-    box_plots(
-        VSS_rho_sol, 
-        labels,
-        r'$\rho$',
-        "VSS",
-        "VSS_rho"
-        )
 
 
     n_scenarios_in = 30
-    n_repetitions = 100
 
-    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data)
 
-    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, dict_data)
+    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data)
     
     labels=range(1,n_scenarios_in+1)
 
     bar_plots(
             of_ex_boxes, 
             labels,
-            'Repetitions',
+            'Scenarios',
             "OF",
-            "OF value exact vs. number of repetitions"
+            "OF value exact vs. number of scenarios",
+            "in_sample_grb", 0
             )
 
     bar_plots(
             of_heu_boxes, 
             labels,
-            'Repetitions',
+            'scenarios',
             "OF",
-            "OF value heuristic vs. number of repetitions"
+            "OF value heuristic vs. number of scenarios",
+            "in_sample_heu", 0
             )
 
 
@@ -137,13 +116,12 @@ if __name__ == '__main__':
     # #out of sample stability
 
 
-    n_scenarios_in = 10
-    n_scenarios_out = 20
-    n_repetitions = 10
-    labels=range(1, n_scenarios_out+1)
-    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst, n_repetitions, n_scenarios_in,n_scenarios_out, dict_data)
+    n_scenarios_in = 30
+    n_scenarios_out = 100
+    labels=range(1, n_scenarios_in+1)
+    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data)
 
-    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst, n_repetitions, n_scenarios_in, n_scenarios_out, dict_data)
+    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst,  n_scenarios_in, n_scenarios_out, dict_data)
 
 
 
@@ -151,19 +129,19 @@ if __name__ == '__main__':
     bar_plots(
             E_ex_boxes, 
             labels,
-            'scenarios',
-            "Influenced nodes",
-            "OutOfSampleGrb",
-            VSS_best
+            'Scenarios',
+            "OF",
+            "OF value exact vs. number of scenarios",
+            "out_of_sample_grb", 1
             )
 
     bar_plots(
             E_heu_boxes, 
             labels,
-            'scenarios',
-            "Influenced nodes",
-            "OutOfSampleHeu",
-            VSS_best
+            'Scenarios',
+            "OF",
+            "OF value heuristic vs. number of scenarios",
+            "out_of_sample_heu", 1
             )
 
 
@@ -174,8 +152,34 @@ if __name__ == '__main__':
     #     "E[nodes_influenced]", "occurencies", 1
     # )
 
+#VSS solution
+    n_scen_in=20
+    n_scen_out=100
+    n_repetitions=10
+    tresh_res=0.05
+    VSS_tot, tresh=test.VSS_solve(
+        tresh_res,
+        prb,
+        heu1,
+        dict_data,
+        sam,
+        inst,
+        n_scen_in,
+        n_scen_out,
+        n_repetitions
+    )
 
-    
+    labels=np.around(tresh, 2)
+    box_plots(
+        VSS_tot, 
+        labels,
+        r'$\rho$',
+        "VSS",
+        "VSS_rho",
+        "vssrho",
+        n_repetitions,
+        n_scen_in
+        )
 
     '''
     tipo qua definiamo il numero di prove che vogliamo fare.
