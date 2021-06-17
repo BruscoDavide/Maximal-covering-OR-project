@@ -1,0 +1,183 @@
+PS C:\Users\davide.brusco\Documents\GitHub\Maximal-covering-OR-project> & C:/Users/davide.brusco/AppData/Local/Programs/Python/Python39/python.exe c:/Users/davide.brusco/Documents/GitHub/Maximal-covering-OR-project/main.py
+
+--------------------------------------------
+Warning: your license will expire in 3 days
+--------------------------------------------
+
+Academic license - for non-commercial use only - expires 2021-06-20
+Using license file c:\gurobi912\gurobi.lic
+Parameter OutputFlag unchanged
+   Value: 1  Min: 0  Max: 1  Default: 1
+Changed value of parameter LogFile to ./logs/gurobi.log
+   Prev:   Default:
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+Optimize a model with 701 rows, 714 columns and 1297 nonzeros
+Model fingerprint: 0xbf3eac3f
+Variable types: 0 continuous, 714 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-02, 2e-02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+01, 1e+01]
+Found heuristic solution: objective -0.0000000
+Presolve removed 701 rows and 714 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 12 available processors)
+
+Solution count 2: 11.66 -0
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.166000000000e+01, best bound 1.166000000000e+01, gap 0.0000%
+11.66 [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0.005208492279052734        
+11.88 [0. 0. 1. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.] 0.000997781753540039
+_______________________________________________________________________________________________________________________________
+PS C:\Users\davide.brusco\Documents\GitHub\Maximal-covering-OR-project> & C:/Users/davide.brusco/AppData/Local/Programs/Python/Python39/python.exe c:/Users/davide.brusco/Documents/GitHub/Maximal-covering-OR-project/main.py
+
+--------------------------------------------
+Warning: your license will expire in 3 days
+--------------------------------------------
+
+Academic license - for non-commercial use only - expires 2021-06-20
+Using license file c:\gurobi912\gurobi.lic
+Parameter OutputFlag unchanged
+   Value: 1  Min: 0  Max: 1  Default: 1
+Changed value of parameter LogFile to ./logs/gurobi.log
+   Prev:   Default:
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+Optimize a model with 701 rows, 714 columns and 1281 nonzeros
+Model fingerprint: 0xca01c560
+Variable types: 0 continuous, 714 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-02, 2e-02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+01, 1e+01]
+Found heuristic solution: objective -0.0000000
+Presolve removed 701 rows and 714 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 12 available processors)
+
+Solution count 2: 11.34 -0
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.134000000000e+01, best bound 1.134000000000e+01, gap 0.0000%
+11.34 [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0.008980989456176758
+11.96 [0. 0. 1. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.] 0.000997781753540039
+________________________________________________________________________________________________________________________________
+PS C:\Users\davide.brusco\Documents\GitHub\Maximal-covering-OR-project> & C:/Users/davide.brusco/AppData/Local/Programs/Python/Python39/python.exe c:/Users/davide.brusco/Documents/GitHub/Maximal-covering-OR-project/main.py
+
+--------------------------------------------
+Warning: your license will expire in 3 days
+--------------------------------------------
+
+Academic license - for non-commercial use only - expires 2021-06-20
+Using license file c:\gurobi912\gurobi.lic
+Parameter OutputFlag unchanged
+   Value: 1  Min: 0  Max: 1  Default: 1
+Changed value of parameter LogFile to ./logs/gurobi.log
+   Prev:   Default:
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+Optimize a model with 701 rows, 714 columns and 1311 nonzeros
+Model fingerprint: 0xab7aaf30
+Variable types: 0 continuous, 714 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-02, 2e-02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+01, 1e+01]
+Found heuristic solution: objective -0.0000000
+Presolve removed 701 rows and 714 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 12 available processors)
+
+Solution count 2: 11.94 -0
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.194000000000e+01, best bound 1.194000000000e+01, gap 0.0000%
+11.94 [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0.011354446411132812
+12.12 [0. 0. 1. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.] 0.0009961128234863281
+________________________________________________________________________________________________________________________________
+PS C:\Users\davide.brusco\Documents\GitHub\Maximal-covering-OR-project> & C:/Users/davide.brusco/AppData/Local/Programs/Python/Python39/python.exe c:/Users/davide.brusco/Documents/GitHub/Maximal-covering-OR-project/main.py
+
+--------------------------------------------
+Warning: your license will expire in 3 days
+--------------------------------------------
+
+Academic license - for non-commercial use only - expires 2021-06-20
+Using license file c:\gurobi912\gurobi.lic
+Parameter OutputFlag unchanged
+   Value: 1  Min: 0  Max: 1  Default: 1
+Changed value of parameter LogFile to ./logs/gurobi.log
+   Prev:   Default:
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+Optimize a model with 701 rows, 714 columns and 1286 nonzeros
+Model fingerprint: 0x05675c63
+Variable types: 0 continuous, 714 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-02, 2e-02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+01, 1e+01]
+Found heuristic solution: objective -0.0000000
+Presolve removed 701 rows and 714 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds
+Thread count was 1 (of 12 available processors)
+
+Solution count 2: 11.44 -0
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.144000000000e+01, best bound 1.144000000000e+01, gap 0.0000%
+11.44 [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0.00998234748840332
+11.9 [0. 0. 1. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.] 0.0009965896606445312
+________________________________________________________________________________________________________________________________PS C:\Users\davide.brusco\Documents\GitHub\Maximal-covering-OR-project> & C:/Users/davide.brusco/AppData/Local/Programs/Python/Python39/python.exe c:/Users/davide.brusco/Documents/GitHub/Maximal-covering-OR-project/main.py
+
+--------------------------------------------
+Warning: your license will expire in 3 days
+--------------------------------------------
+
+Academic license - for non-commercial use only - expires 2021-06-20
+Using license file c:\gurobi912\gurobi.lic
+Parameter OutputFlag unchanged
+   Value: 1  Min: 0  Max: 1  Default: 1
+Changed value of parameter LogFile to ./logs/gurobi.log
+   Prev:   Default:
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+Optimize a model with 701 rows, 714 columns and 1308 nonzeros
+Model fingerprint: 0x8fdfe122
+Variable types: 0 continuous, 714 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [2e-02, 2e-02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+01, 1e+01]
+Found heuristic solution: objective -0.0000000
+Presolve removed 701 rows and 714 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds
+Thread count was 1 (of 12 available processors)
+
+Solution count 2: 11.88 -0
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.188000000000e+01, best bound 1.188000000000e+01, gap 0.0000%
+11.88 [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0.0068166255950927734
+12.16 [0. 0. 1. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.] 0.0
