@@ -20,7 +20,7 @@ class LargeScaleInfluence():
 
         problem_name = "LargeSI"
         logging.info("{}".format(problem_name))
-        # logging.info(f"{problem_name}")
+        logging.info(f"{problem_name}")
 
         model = gp.Model(problem_name) #create the model instance
         #create the model variables
@@ -71,7 +71,7 @@ class LargeScaleInfluence():
         else:
             model.setParam('OutputFlag', 0)
         model.setParam('LogFile', './logs/gurobi.log')
-        # model.write("./logs/model.lp")
+        model.write("./logs/model.lp")
 
         start = time.time()
         model.optimize()
@@ -101,7 +101,7 @@ class LargeScaleInfluence():
 
         problem_name = "LargeSI"
         logging.info("{}".format(problem_name))
-        # logging.info(f"{problem_name}")
+        logging.info(f"{problem_name}")
 
         model = gp.Model(problem_name)
         X = model.addVars(
@@ -147,7 +147,7 @@ class LargeScaleInfluence():
         else:
             model.setParam('OutputFlag', 0)
         model.setParam('LogFile', './logs/gurobi.log')
-        # model.write("./logs/model.lp")
+        model.write("./logs/model.lp")
 
         start = time.time()
         model.optimize()

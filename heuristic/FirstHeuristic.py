@@ -132,7 +132,10 @@ class FirstHeuristic():
         sol_z = np.zeros([dict_data['Order']])
         sol_z[sol_z_idx] = 1
         
-        
+        logging.info("Heuristic algorithm solutions: ")
+        logging.info("Value of the Objective Function: "+str(of))
+        logging.info("Vector of solutions z_j: "+str(sol_z))
+        logging.info("Computational time: "+str(comp_time))
         
         return round(of,4), sol_z, comp_time
 
@@ -201,6 +204,9 @@ class FirstHeuristic():
 
         comp_time = end - start
         
-        
+        logging.info("Heuristic algorithm deterministic solution: ")
+        logging.info("Value of the Objective Function: "+str(of))
+        logging.info("Vector of solutions z_j: "+str(sol_z))
+        logging.info("Computational time: "+str(comp_time))
         
         return round(of,4), sol_z, comp_time

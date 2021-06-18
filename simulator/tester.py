@@ -71,6 +71,9 @@ class Tester():
                 what[j]=float(ans[j])
             boxes_data.append(what)
 
+        logging.info("In-sample stability considered vectors: ")
+        logging.info("Value of the Objective Function: "+str(boxes_data))
+        
         return ans, boxes_data
     
 
@@ -116,6 +119,9 @@ class Tester():
                 what[m]=float(ans[m])
             boxes_data[i-1].append(what)
 
+        logging.info("Out-of-sample stability considered vectors: ")
+        logging.info("Value of the Objective Function: "+str(boxes_data))
+
         return ans, boxes_data
 
 
@@ -147,6 +153,9 @@ class Tester():
                 if freqs[j][i]>tresh:
                     R_bar[j].append(i)
 
+
+        logging.info("Generated mean reachability matrix R(i): ")
+        logging.info("Matrix: "+str(R_bar))
 
         return R_bar
 
@@ -247,6 +256,10 @@ class Tester():
             for j in range(n_repetitions):
                 corr_ds[i].append(gap_tot[i][j])
 
+
+        logging.info("VSS solution of the algorithm for varying treshold: ")
+        logging.info(r'$\rho$'"=: range(0,1,"+str(tresh_res))
+        logging.info("Data: "+str(corr_ds))
 
         return corr_ds, tresh
 

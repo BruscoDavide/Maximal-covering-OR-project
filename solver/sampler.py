@@ -3,6 +3,7 @@ import numpy as np
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
+import logging
 
 def plotter_scenario(R, g, n_scen, n_order):
     
@@ -59,5 +60,6 @@ class Sampler:
 
 
         # plotter_scenario(reach, instance.g, n_scenarios, instance.graph_order)
+        logging.info("Reachability matrices generated: "+str(reach))
         return reach
 
