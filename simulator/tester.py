@@ -258,7 +258,7 @@ class Tester():
 
 
         logging.info("VSS solution of the algorithm for varying treshold: ")
-        logging.info(r'$\rho$'"=: range(0,1,"+str(tresh_res))
+        logging.info("rho=: range(0,1,"+str(tresh_res))
         logging.info("Data: "+str(corr_ds))
 
         return corr_ds, tresh
