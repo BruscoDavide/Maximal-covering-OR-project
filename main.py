@@ -24,28 +24,30 @@ if __name__ == '__main__':
         filemode='w'
     )
 
-    fp = open("./etc/sim_setting.json", 'r')
+    fp = open("./etc/sim_setting.json", 'r') #opening the setting file
     sim_setting = json.load(fp)
     fp.close()
 
     sam = Sampler()
 
-
-    if sim_setting["Graph_type"]=='konect':
+    #if the program has to use the graph retrieved from konect.org, then it has to open the adjacence matrix file to
+    #transform it in a usable graph
+    if sim_setting["Graph_type"]=='konect': 
         sim_setting["fp"] =open("./dataset/librec-filmtrust-trust/out.txt",'r')
-    inst = Instance(sim_setting)
+    inst = Instance(sim_setting) #create the graph instance
     dict_data = inst.get_data()
-   # print(dict_data)
     
    
-    # Reward generation
-    n_scenarios = 50
+    # Once the problem instance is created, an arbitrary number of scenarios are generated for the seed set problem solution
+    n_scenarios = 20
     reachability = sam.reachability_generation(
         inst,
         n_scenarios=n_scenarios
     )
-
+    
+    #creating the Gurobi solver object
     prb = LargeScaleInfluence()
+    #solving the problem with a LP approach
     of_exact, sol_exact, comp_time_exact = prb.solve(
         dict_data,
         reachability,
@@ -54,37 +56,28 @@ if __name__ == '__main__':
     )
     print(of_exact, sol_exact, comp_time_exact)
     
-
+    #creating the Heuristic solver object
     heu1 = FirstHeuristic()
-
+    #solving the problem with the heuristic approach
     of_heu, sol_heu, comp_time = heu1.solve(
         dict_data,
         reachability,
         n_scenarios
     )
-
     print(of_heu, sol_heu, comp_time)
 
-        
-
+    #%% COMPARISON:
+    # 1) in sample stability #####################################################################
+    test = Tester() #instantiating the tester class
     
+    n_scenarios_in = 20
 
-
-    # COMPARISON:
-    # in sample stability
-    test = Tester()
-    
-
-
-
-    n_scenarios_in = 50
-
-    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data)
-
-    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data)
+    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data) #in sample resolution method for the exact solver
+    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data) #in sample resolution method for the heuristic
     
     labels=range(1,n_scenarios_in+1)
 
+    #plot the in sample stability results for the exact solution
     bar_plots(
             of_ex_boxes, 
             labels,
@@ -93,7 +86,7 @@ if __name__ == '__main__':
             "OF value exact vs. number of scenarios",
             "in_sample_grb_"+dict_data["gnam"], 0
             )
-
+    #plot the in sample stability results for the heuristic solution
     bar_plots(
             of_heu_boxes, 
             labels,
@@ -103,29 +96,16 @@ if __name__ == '__main__':
             "in_sample_heu_"+dict_data["gnam"], 0
             )
 
-
-
-    # plot_comparison_hist(
-    #         [of_grblist, of_heulist],
-    #         ["Exact", "Heuristic"],
-    #         ['red', 'blue'],
-    #         "E[nodes_influenced]", "occurencies", 0
-    #     )
-
-    # #COMPARISON:
-    # #out of sample stability
-
-
-    n_scenarios_in = 50
-    n_scenarios_out = 200
+    # 2) out of sample stability #######################################################################
+    
+    n_scenarios_in = 20 #n of scenarios used to train the model
+    n_scenarios_out = 100 #n of scenarios used to test the results obtained
     labels=range(1, n_scenarios_in+1)
-    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data)
 
-    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst,  n_scenarios_in, n_scenarios_out, dict_data)
+    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data) #out of sample stability for exact solver
+    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst,  n_scenarios_in, n_scenarios_out, dict_data) #out of sample stability for heuristic
 
-
-
-
+    #plot of the out of sample stability for the exact solver
     bar_plots(
             E_ex_boxes, 
             labels,
@@ -134,7 +114,7 @@ if __name__ == '__main__':
             "OF value exact vs. number of scenarios",
             "out_of_sample_grb_"+dict_data["gnam"], 1
             )
-
+    #plot of the out of sample stability for the heuristic
     bar_plots(
             E_heu_boxes, 
             labels,
@@ -144,15 +124,7 @@ if __name__ == '__main__':
             "out_of_sample_heu_"+dict_data["gnam"], 1
             )
 
-
-    # plot_comparison_hist(
-    #     [E_inf_grblist, E_inf_heulist],
-    #     ["Exact", "Heuristic"],
-    #     ['red', 'blue'],
-    #     "E[nodes_influenced]", "occurencies", 1
-    # )
-
-#VSS solution
+    # 3) VSS solution #######################################################################################
     n_scen_in=50
     n_scen_out=200
     n_repetitions=100
@@ -180,44 +152,6 @@ if __name__ == '__main__':
         n_repetitions,
         n_scen_in
         )
-
-    '''
-    tipo qua definiamo il numero di prove che vogliamo fare.
-    ci facciamo ventordici reachability matrices, una per ogni prova che vogliamo provare a fare
-
-    Per aggiungere un po' di spicy, possiamo definire un seed all'interno di sampler cosi' ogni volta che 
-    creiamo una reachability matrix, ci viene un po' diversa e abbiamo piu' stocasticita'
-    '''
-
-    '''
-    poi con quella reachability ed il set Z (sol_exact), facciamo la prova ed espandiamo l'influenza.
-    Cosa importante in questo caso, non facciamo piu' la media su tutti i scenari, ma si prende ogni scenario
-    in parte, si fa la sua espansione di influenza, ci si salva il numero di nodi attivati in una lista 
-    e poi si plotta alla fine l'istogramma
-    '''
-
-    """
-    per ogni prova ci salviamo i risultati, immagino qualcosa come il numero di nodi attivati e ne tracciamo un 
-    istogramma, poi le paragoniamo.
-    Si spera le distribuzioni vengano simili
-    la cosa che mi crea qualche dubbio e' che questo ragionamento e' molto simile a cio' che si fa per la sample stability e non capisco bene la differenza
-    tra i due approcci
-    
-
-
-    in sample: compara objective function di entrambe le soluzioni
-
-    out of sample: compariamo usando un campione molto più grande
-    usare numero di scenari molto più grandi rispetto a in sample
-    genero degli scenari per gurobi
-    genero altri scenari per l'euristica
-    nell'out of sample prendo la soluzione dei seed, e uso quelli per vedere quanti ne sono influenzati
-    
-    
-    per il valore atteso (per ogni variabile aleatoria mettiamo il suo valore atteso)
-    determinare il valore atteso dei nodi che influenzano
-    """
-
 
     
     # printing results of a file

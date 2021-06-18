@@ -21,11 +21,6 @@ class Tester():
     def __init__(self):
         pass
 
-    
-
-    
-
-    #noi non abbiamo nessun second stage solution
     def apply_influence_model(
         self, inst, sol, n_scenarios, reachability, dict_data
     ):
@@ -57,8 +52,8 @@ class Tester():
     def in_sample_stability(self, problem, sampler, instance, n_scenarios_sol, dict_data):
         ans = []
         boxes_data=[]
-        #qua repetitions non si usa piu', si fa andare il programma per n_scnarios_sol per vedere
-        #la convergenza in base agli scenari
+        #generate N_scenarios_sol for the reachability generation to train the model on
+        #each iteration has a different number of scenarios to analyze how the system behaves when increasing the number of scenarios
         for i in range(1,n_scenarios_sol+1):
             
             reachability = sampler.reachability_generation(
@@ -70,73 +65,22 @@ class Tester():
                 reachability,
                 i
             )
-            ans.append(of)
+            ans.append(of) #save all the objective function values in order to be able to do a statistics depending on the number of scenarios
             what=np.zeros(len(ans))
-            for j in range(len(what)):
+            for j in range(len(what)): 
                 what[j]=float(ans[j])
             boxes_data.append(what)
-
-            
-        # ans=boxes_data[n_repetitions-1]
-
 
         return ans, boxes_data
     
 
-        """
-        nella parte del tester dobbiamo prendere l'istanza del grafo e farci N_reachability matr (che corrispondono a 
-        reward 1 e reward 2). Una volta create ste reachability, proviamo ad usare il seed trovato dalla soluzione
-        del problema e vedere come si comporta il programma e se da' risultati simili.
-        Se le istanze differenti si comportano in maniera piu' o meno uguale, allora  abbia in sample stability
-        dubbio: devono essere simili in termini di quanti nodi vengono influenzati, in termini del seed che viene selezionato o dei dei nodi
-        che vengono attivati?
-        per come l'ho intesa io, per avere stabilita', alla fine si deve avere una distribuzione simile dei nodi influenzati.
-            
-        """
-
-        '''
-        PSEUDOCODE di cio' che serve a noi:
-        node_distr_rep = [[]]*n_repetitions
-        for i in range(n_repetitions):
-            reach = sampler.reachability_genereation(instance, n_scenarios)
-            -solve exact model
-            -estrarre Z
-
-            =================> tipo qua dovrebbe finire la in sample stab e di base ci salveremmo solo i nodi Z e ne faremmo gli hist
-
-            node_freq = [0]*inst.n_nodes
-            for w in range(number_scenarios)
-                r = reach[w][:]
-                creo grafo di questa reachability
-                applico espansione dal set di nodi z
-                controllo quali sono attivi e aggiorno le frequenze per ogni nodo
-
-            #qua salvo i risultati di questa run
-            node_distr_rep[i] = node_freq
-
-        alla fine di tutto bisognerebbe trovare un modo per paragonare le frequenze di tutte le prove
-        come possiamo fare a confrontarle?
-        qual e' una metrica accettabile? quanto scarto possiamo accettare?
-
-        NOTA: per quanto riguarda gli histogrammi, piu' sono ripidi e si avvicinano ad una delta, piu' e' stabile
-
-        '''
-        
-    """
-    poi qua la out of sample stability e' legata al second stage, ma noi nel nostro caso non abbiamo second stage, quindi come si dovrebbe procedere?
-    l'unica distinzione che noi possiamo fare tra first e second stage e' definire come first stage quando troviamo Z e second stage quando
-    dal seed Z vogliamo espandere l'influenza sul grafo e definiamo cosa succede
-
-    quindi di base = > 
-    first stage = trovo le z per tanti problemi e vedo se sono simili
-    second stage = trovo tante z e applico il modello di espansione e controllo che anche queste soluzioni siano simili
-    
-    la prima la si fa in in sample stab, la seconda in out of sample stab
-    """
+       
     def out_of_sample_stability(self, problem, sampler, instance, n_scenarios_sol, n_scenarios_out, dict_data):
         
         boxes_data=[]
+        #also for the out of sample stability a scenario dependent analysis. Each run is performed with a increasing number of scenarios for the seed set resolution
         for i in range(1, n_scenarios_sol+1):
+            #Part1: solve the problem and find the seed set
             ans = []
             reachability = sampler.reachability_generation(
                 instance,
@@ -149,8 +93,8 @@ class Tester():
             )
             
 
-            #now out of check
-            
+            #Part2: 
+            #once having the seed set, generate new scenario to test the seed on
             reachability_out = sampler.reachability_generation(
                 instance,
                 n_scenarios=n_scenarios_out
@@ -158,6 +102,7 @@ class Tester():
             
             boxes_data.append([])
             sols_vec=np.zeros(n_scenarios_out)
+            #a influence expansion is performed on each of the n_scenarios_out sets and the OF values is collected
             for j in range(n_scenarios_out):
                 sol_out = self.apply_influence_model(
                     instance, sol,
@@ -165,6 +110,7 @@ class Tester():
                 )
                 sols_vec[j]=sol_out
                 ans.append(sol_out)
+            #for every i-th trial there will be a list of 100 values
             what=np.zeros(len(ans))
             for m in range(len(what)):
                 what[m]=float(ans[m])
@@ -175,7 +121,7 @@ class Tester():
 
 
     def r_bar_evaluation(self, sampler, instance, n_scenarios, dict_data, tresh):
-        
+        #here a frequency count is performed with the aim of finding a mean reachability matrix depending on a threshold parameter
         reachability = sampler.reachability_generation(
             instance,
             n_scenarios
@@ -193,6 +139,8 @@ class Tester():
         freqs=freqs/n_scenarios
         
         R_bar=[]
+        #create the reachability matrix inserting the node i in the j-th reachability list if it's frequency is
+        #greater than the threshold
         for j in nods:
             R_bar.append([])
             for i in nods:
@@ -204,24 +152,27 @@ class Tester():
 
         
     def VSS_solve(self, tresh_res,  prb, heu1, dict_data, sam, inst, n_scen, n_scen_out, n_repetitions):
-        tresh=np.arange(0,1,tresh_res)
+        #the method is used to compare the out of sample stability results with the one obtained computing the solution of the mean reachability matrix
+        tresh=np.arange(0,1,tresh_res) #different thresholds level are used
         VSS_rho_box=[]
         gap_tot=np.zeros([len(tresh), n_repetitions])
-        for f in range(n_repetitions):
+        for f in range(n_repetitions): #perform the comparison n times to be able in tracking a statistic
+            #create a stochastic reachability
             reachability = sam.reachability_generation(
                     inst,
                     n_scenarios=n_scen
                 )
+            #solve the problem
             _, sol,_ = prb.solve(
                 dict_data,
                 reachability,
                 n_scen
             )
             
-            for i in range(len(tresh)):
+            for i in range(len(tresh)): #perform the analysis for all the threshold levels
                 VSS_rho_box.append([])
                 n_scenarios=1000
-
+                #get the mean reachability matrix with thershold i
                 R_bar=self.r_bar_evaluation(
                     sam, 
                     inst, 
@@ -229,19 +180,21 @@ class Tester():
                     dict_data,
                     tresh[i]
                     )
-
+                #solve the problem on that mean reachability matrix
                 _, sol_det,_ = prb.solve_deterministic(
                     dict_data,
                     R_bar,
                     verbose = False
                 )
 
+                #generate the out of sample testing scenarios
                 reachability_out = sam.reachability_generation(
                     inst,
                     n_scenarios=n_scen_out
                 )
 
                 ans=[]
+                #test the stochastic result on the out of sample test scenarios
                 for j in range(n_scen_out):
                     sol_out = self.apply_influence_model(
                         inst, sol,
@@ -249,7 +202,7 @@ class Tester():
                     )
                     
                     ans.append(sol_out)
-
+                #test the mean seed set obtained from the solution of the problem with R_bar
                 sol_out_det = self.apply_influence_model(
                     inst,
                     sol_det,
@@ -257,7 +210,7 @@ class Tester():
                     R_bar,
                     dict_data
                 )
-
+                #compute their difference and track mean value and variance 
                 meanans_perc=np.mean(ans)/dict_data["Order"]
                 sol_det_perc=sol_out_det/dict_data["Order"]
 

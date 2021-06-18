@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 def plotter_scenario(R, g, n_scen, n_order):
     
-    
     for w in range(n_scen):
         g_R=nx.DiGraph()
         considered=R[w]
@@ -34,17 +33,16 @@ def plotter_scenario(R, g, n_scen, n_order):
         plt.show()
   
 
-
-
-
-
 class Sampler:
+    #class used to create the scenarios.
     def __init__(self):
         pass
 
     def reachability_generation(self, instance, n_scenarios):
+        #the reachability matrix is a 3D data structure where every row represent a new scenario
+        #each row contains n_nodes lists, each representing the reachability set per node. By reachability list is meant
+        #the set of nodes influencing node_j
         nod=instance.adj_mat
-
         nodes=range(instance.graph_order)
         scenarios=range(n_scenarios)
 
@@ -53,9 +51,10 @@ class Sampler:
         for w in scenarios:
             for i in nodes:
                 reach[w][i]=[]
-                for j in instance.g.predecessors(i): 
-                    temp = np.around(np.random.uniform(0,1),4)
-                    if temp<=nod[j][i]['weight']:
+                for j in instance.g.predecessors(i): #for each node are inspected its predecessors
+                    temp = np.around(np.random.uniform(0,1),4) #extract a random uniform probability sample
+                    #the sample represent the "resistence" the node is opposing to the influence
+                    if temp<=nod[j][i]['weight']: #if the resistence il lower than the influence on the edge, the node is influenced
                         reach[w][i].append(j)
 
 

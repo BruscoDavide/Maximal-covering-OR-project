@@ -6,10 +6,14 @@ import random
 import sys
 
 def assign_weights(g):
+    #FUNCTION DESCRIPTION: the method takes as input a directed graph and it assigns for each link a weight. The weights represent the
+    #probability that a node has to influence its successors and this number is influenced by the total number of neighbors the node under
+    #analysis has. Higher the node degree, higher will be the weight of that edge. To not make the process deterministic, a 20% noise fluctuation
+    #is insert to each value.
     maxim=0
-    for j in g.nodes:
+    for j in g.nodes: #scanning all the nodes in the graph
         fff=[]
-        for i in g.successors(j):
+        for i in g.successors(j): #extracting all the successors of the node
             fff.append(i)
             
         weig=len(fff)
@@ -18,20 +22,22 @@ def assign_weights(g):
             weig_arc=weig+np.random.uniform(-0.2*weig,0.2*weig)
             g[j][i]['weight']=weig_arc
             if weig_arc>maxim:
-                maxim=weig_arc
+                maxim=weig_arc #save the maximum weight for the normalization procedure at the end
     
-    for j in g.nodes:
+    for j in g.nodes: #normalizing the weigths respect the maximum
         for i in g.successors(j):
             g[j][i]['weight']=g[j][i]['weight']/maxim
     return g
 
+#Now it follows 3 functions used for the graph creation:
+# 1) the curated graph is used as a initial analysis on the model to check if the mathematical model works.
 def curated_graph():
-    orders = 14
+    orders = 14 #only 14 nodes used for simplicity
     curated = nx.DiGraph()
     for i in range(orders):
         curated.add_node(i)
         
-    main_nodes = [2,4] 
+    main_nodes = [2,4] #main central nodel, they represent the influencers in the graph
     nodes = np.arange(0,orders,1)
     nodes = list(nodes)
 
@@ -39,10 +45,10 @@ def curated_graph():
         nodes.remove(main_nodes[i])
     random.shuffle(nodes)
 
-    curated.add_edge(main_nodes[0], main_nodes[1])
+    curated.add_edge(main_nodes[0], main_nodes[1])  #the two main nodes are conncected one to the other
     curated.add_edge(main_nodes[1], main_nodes[0])
 
-    neigh_per_node = 6
+    neigh_per_node = 6 #to each node there are connected 6 neighbors
     for core in main_nodes:
         for i in range(neigh_per_node):
             curated.add_edge(core, nodes[0])
@@ -51,7 +57,11 @@ def curated_graph():
     curated = assign_weights(curated)
     return curated, orders
 
+# 2) a scale free graph is realized for intermediate testing.
 def random_graph(order, graph_seed):
+    #the networkX library was allowing to create a scale free graph, but it was not allowing to modify the weights.
+    #After a preliminary analysis where the parameters for the attachment were tuned, then the graph was copied to a DiGraph()
+    #to be able to randomly assign the weights
     g = nx.generators.directed.scale_free_graph(order, 0.01, 0.39,0.6, 3, 4, seed=graph_seed)
     ad = g._adj
 
@@ -70,17 +80,19 @@ def random_graph(order, graph_seed):
 
     return copy
 
+#3) The third graph is retrieved from a third pary site. The graph arrives as an adjacence list, so it has to be trasformed in a
+#networkX graph instance
 def konect_graph(fp):
         konnect_g = nx.DiGraph()
         node_list = []
     
-        for line in fp:
-            l = line.split()
-            if int(l[0])-1 not in node_list:
+        for line in fp: #read line by line
+            l = line.split() #split the line as [edge source, edge destination]
+            if int(l[0])-1 not in node_list: #if the node doesn't exist, add it
                 konnect_g.add_node(int(l[0])-1)
             if int(l[1])-1 not in node_list:
                 konnect_g.add_node(int(l[0])-1)
-            konnect_g.add_edge(int(l[0])-1,int(l[1])-1)
+            konnect_g.add_edge(int(l[0])-1,int(l[1])-1) #create the edge
             
         
         konnect_g = assign_weights(konnect_g)  
@@ -89,11 +101,9 @@ def konect_graph(fp):
 
 
 
-class Instance():
-    
-    
-    
-    def __init__(self, sim_setting):
+class Instance(): 
+
+    def __init__(self, sim_setting): #create the graph instance depending on the sim_settings file
         logging.info("starting simulation...")
         self.graph_order = sim_setting['Graph_Order']
         self.K = sim_setting['Seed_card']
@@ -110,7 +120,7 @@ class Instance():
             elif sim_setting["Graph_type"]=='konect':
                 self.g, nodes=konect_graph(sim_setting["fp"])
                 self.graph_order=nodes
-        except:
+        except: #error handler
             print("No graph type exists with specified type")
             sys.exit(1)
         self.adj_mat=self.g._adj
@@ -121,11 +131,6 @@ class Instance():
         logging.info(f"Seed of the graph: {self.graph_seed}")
         logging.info("simulation end")
 
-
-
-    
-    
-    
     def get_data(self):
         logging.info("getting data from instance...")
         return {

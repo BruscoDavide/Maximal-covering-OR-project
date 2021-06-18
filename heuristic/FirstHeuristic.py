@@ -4,12 +4,13 @@ import math
 import logging
 import numpy as np
 
-
 ################
 import collections
 ################
 
-def compute_succ(g, R, z_j):
+def compute_succ(g, R, z_j): #inspect the reachability matrix for that scenario.
+    #since in the scenario w not all the nodes are activated, only the active nodes have to be take in account, so
+    #the successors are selected only among the "alive" edge
     succ_computed=[]
     for i in range(len(R)):
         #for j in R[i]:
@@ -36,8 +37,9 @@ class FirstHeuristic():
         zi=[]
         
         start = time.time()
-        
-        """ for w in scenarios:
+        #the following code was the V1 where a O(N^3) approach was used. For low order graphs it was working properly and it was returning 
+        #execution times much lower with respect to the Gurobi solver, but for higher order graphs it was slowing down.
+        """ for w in scenarios:  
             reach_scen = reachability[w]
 
             freqs = np.zeros([dict_data['Order']])
@@ -55,25 +57,24 @@ class FirstHeuristic():
         ufficial = end-start """
             
         ##########################################
-        #start_prova = time.time()
+
+        #Using the Collection Python library which has a searching algorithm O(N*log(N)), the searching process increased the perfomances
+        #allowing a fast resolution also for high order graphs.
         for w in scenarios:
-            reach_scen = reachability[w]
+            reach_scen = reachability[w] #extract the row of the reachability
             tmp = []
             tmp2 = []
-            for i in reach_scen:
+            for i in reach_scen: #concatenate the lists
                 tmp += i
             
-            counter=collections.Counter(tmp)
-            common = counter.most_common(dict_data['K'])
-            for k in common:
-                tmp2.append(k[0])
+            counter=collections.Counter(tmp) #perform the node frequency count
+            common = counter.most_common(dict_data['K']) #extract the K most common nodes, with K defined by sim_settings.json
+            for k in common: #append the most common nodes per scenario
+                tmp2.append(k[0]) #append only the label of the node, not the number of repetitions
                 zi.append(tmp2)
-
-        #end_prova = time.time()
-        #time_prova = end_prova - start_prova
-                
         ##########################################
 
+        #objective function computation:
         of=0
         p=1/n_scenarios
         for w in scenarios:
@@ -82,13 +83,13 @@ class FirstHeuristic():
             activating_set=[]
 
 
-            for ml in zi[w]:
+            for ml in zi[w]: #the seed set are the activating nodes, while the activated list keeps track of the nodes influenced by the activating nodes
                 activating_set.append(ml)            
                 activated_set.append(ml)
 
-            while activating_set!=[]:
+            while activating_set!=[]: #extract node by node
                 j=activating_set.pop()
-                fiter=compute_succ(dict_data["Graph"], reachability[w], j)
+                fiter=compute_succ(dict_data["Graph"], reachability[w], j) #extract the successors of those central nodes
                 for f in fiter:
                     if f not in activated_set:
                         # temp = np.around(np.random.uniform(0,1),4)
@@ -98,6 +99,7 @@ class FirstHeuristic():
                                 
             of+=len(activated_set)*p
 
+        #seed search V1: again a high computational complexity search was performed which was slowing down the program
         """ freqs = np.zeros([dict_data['Order']])
         for i in zi:
             for j in i:
@@ -110,6 +112,7 @@ class FirstHeuristic():
             sol_z[i]=1 """
 
         ###############################
+        #using the Collections counter, all the seed sets of the scenarios are explored and the K most present are taken as final seed set.
         asd = []
         sol_z_idx = []
         for i in zi:
@@ -150,6 +153,7 @@ class FirstHeuristic():
 
         freqs = np.zeros([dict_data['Order']])
 
+        #since there is only one scenario to be explored, the Collection library wasn't used
         for i in nodes:
             for j in range(len(reach_scen[i])):
                 freqs[reach_scen[i][j]]+=1
