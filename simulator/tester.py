@@ -50,13 +50,13 @@ class Tester():
         
 
     def in_sample_stability(self, problem, sampler, instance, n_scenarios_sol, dict_data, n_repetitions):
-        ans = []
+        
         boxes_data=[]
         #generate N_scenarios_sol for the reachability generation to train the model on
         #each iteration has a different number of scenarios to analyze how the system behaves when increasing the number of scenarios
         for i in range(1,n_scenarios_sol+1):
             boxes_data.append([])
-        
+            ans = []
             for nr in range(n_repetitions):
                 reachability = sampler.reachability_generation(
                     instance,
@@ -83,12 +83,12 @@ class Tester():
     def out_of_sample_stability(self, problem, sampler, instance, n_scenarios_sol, n_scenarios_out, dict_data, n_repetitions):
         
         boxes_data=[]
-        ans = []
+        
         
         #also for the out of sample stability a scenario dependent analysis. Each run is performed with a increasing number of scenarios for the seed set resolution
         for i in range(1, n_scenarios_sol+1):
             #Part1: solve the problem and find the seed set
-          
+            ans = []
             boxes_data.append([])
             for nr in range(n_repetitions):
 
