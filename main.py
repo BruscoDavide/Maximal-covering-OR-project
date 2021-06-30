@@ -8,7 +8,7 @@ from simulator.tester import Tester
 from solver.LargeScaleInfluence import LargeScaleInfluence
 from heuristic.FirstHeuristic import FirstHeuristic
 from solver.sampler import Sampler
-from utility.plot_results import plot_comparison_hist, box_plots, bar_plots
+from utility.plot_results import plot_comparison_hist, box_plots, bar_plots, bar_plots_gap
 
 import matplotlib.pyplot as plt
 
@@ -70,10 +70,11 @@ if __name__ == '__main__':
     # 1) in sample stability #####################################################################
     test = Tester() #instantiating the tester class
     
-    n_scenarios_in = 20
+    n_repetitions = 10
+    n_scenarios_in = 10
 
-    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data) #in sample resolution method for the exact solver
-    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data) #in sample resolution method for the heuristic
+    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data, n_repetitions) #in sample resolution method for the exact solver
+    of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data, n_repetitions) #in sample resolution method for the heuristic
     
     labels=range(1,n_scenarios_in+1)
 
@@ -96,14 +97,25 @@ if __name__ == '__main__':
             "in_sample_heu_"+dict_data["gnam"], 0
             )
 
+    bar_plots_gap(
+        of_ex_boxes,
+        of_heu_boxes,
+        labels,
+        'Scenarios',
+        "GAP %",
+        "GAP between heuristic and exact approach",
+        "gap_bar_plot_"+dict_data["gnam"]
+
+    )
     # 2) out of sample stability #######################################################################
     
+    n_repetitions=10
     n_scenarios_in = 20 #n of scenarios used to train the model
-    n_scenarios_out = 100 #n of scenarios used to test the results obtained
+    n_scenarios_out = 10 #n of scenarios used to test the results obtained
     labels=range(1, n_scenarios_in+1)
 
-    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data) #out of sample stability for exact solver
-    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst,  n_scenarios_in, n_scenarios_out, dict_data) #out of sample stability for heuristic
+    E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data, n_repetitions) #out of sample stability for exact solver
+    E_inf_heulist, E_heu_boxes=test.out_of_sample_stability(heu1, sam, inst,  n_scenarios_in, n_scenarios_out, dict_data, n_repetitions) #out of sample stability for heuristic
 
     #plot of the out of sample stability for the exact solver
     bar_plots(

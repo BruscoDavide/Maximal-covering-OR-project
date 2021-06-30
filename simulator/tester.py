@@ -49,27 +49,29 @@ class Tester():
         return len(activated_set)
         
 
-    def in_sample_stability(self, problem, sampler, instance, n_scenarios_sol, dict_data):
+    def in_sample_stability(self, problem, sampler, instance, n_scenarios_sol, dict_data, n_repetitions):
         ans = []
         boxes_data=[]
         #generate N_scenarios_sol for the reachability generation to train the model on
         #each iteration has a different number of scenarios to analyze how the system behaves when increasing the number of scenarios
         for i in range(1,n_scenarios_sol+1):
-            
-            reachability = sampler.reachability_generation(
-                instance,
-                n_scenarios=i
-            )
-            of, sol, comp_time = problem.solve(
-                dict_data,
-                reachability,
-                i
-            )
-            ans.append(of) #save all the objective function values in order to be able to do a statistics depending on the number of scenarios
+            boxes_data.append([])
+        
+            for nr in range(n_repetitions):
+                reachability = sampler.reachability_generation(
+                    instance,
+                    n_scenarios=i
+                )
+                of, sol, comp_time = problem.solve(
+                    dict_data,
+                    reachability,
+                    i
+                )
+                ans.append(of) #save all the objective function values in order to be able to do a statistics depending on the number of scenarios
             what=np.zeros(len(ans))
             for j in range(len(what)): 
                 what[j]=float(ans[j])
-            boxes_data.append(what)
+            boxes_data[i-1].append(what)
 
         logging.info("In-sample stability considered vectors: ")
         logging.info("Value of the Objective Function: "+str(boxes_data))
@@ -78,42 +80,49 @@ class Tester():
     
 
        
-    def out_of_sample_stability(self, problem, sampler, instance, n_scenarios_sol, n_scenarios_out, dict_data):
+    def out_of_sample_stability(self, problem, sampler, instance, n_scenarios_sol, n_scenarios_out, dict_data, n_repetitions):
         
         boxes_data=[]
+        ans = []
+        
         #also for the out of sample stability a scenario dependent analysis. Each run is performed with a increasing number of scenarios for the seed set resolution
         for i in range(1, n_scenarios_sol+1):
             #Part1: solve the problem and find the seed set
-            ans = []
-            reachability = sampler.reachability_generation(
-                instance,
-                n_scenarios=i
-            )
-            of, sol, comp_time = problem.solve(
-                dict_data,
-                reachability,
-                i
-            )
-            
-
-            #Part2: 
-            #once having the seed set, generate new scenario to test the seed on
-            reachability_out = sampler.reachability_generation(
-                instance,
-                n_scenarios=n_scenarios_out
-            )
-            
+          
             boxes_data.append([])
-            sols_vec=np.zeros(n_scenarios_out)
-            #a influence expansion is performed on each of the n_scenarios_out sets and the OF values is collected
-            for j in range(n_scenarios_out):
-                sol_out = self.apply_influence_model(
-                    instance, sol,
-                    n_scenarios_out, reachability_out[j], dict_data
+            for nr in range(n_repetitions):
+
+                reachability = sampler.reachability_generation(
+                    instance,
+                    n_scenarios=i
                 )
-                sols_vec[j]=sol_out
-                ans.append(sol_out)
-            #for every i-th trial there will be a list of 100 values
+
+
+                of, sol, comp_time = problem.solve(
+                    dict_data,
+                    reachability,
+                    i
+                )
+                
+
+                #Part2: 
+                #once having the seed set, generate new scenario to test the seed on
+                reachability_out = sampler.reachability_generation(
+                    instance,
+                    n_scenarios=n_scenarios_out
+                )
+                
+                # boxes_data.append([])
+                sols_vec=np.zeros(n_scenarios_out)
+                #a influence expansion is performed on each of the n_scenarios_out sets and the OF values is collected
+                for j in range(n_scenarios_out):
+                    sol_out = self.apply_influence_model(
+                        instance, sol,
+                        n_scenarios_out, reachability_out[j], dict_data
+                    )
+                    sols_vec[j]=sol_out
+                    ans.append(sol_out)
+                #for every i-th trial there will be a list of 100 values
             what=np.zeros(len(ans))
             for m in range(len(what)):
                 what[m]=float(ans[m])

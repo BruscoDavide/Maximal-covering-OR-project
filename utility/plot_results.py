@@ -54,3 +54,25 @@ def bar_plots(values, labelled, x_label, y_label, t_itle, fname, which_sample):
     pyplot.grid()
     pyplot.savefig(f"./results/bar_plot_"+fname+".png")
     pyplot.close()
+
+
+def bar_plots_gap(values_ex, values_heu, labelled, x_label, y_label, t_itle, fname):
+    values=[]
+    for j in range(len(values_ex)):
+        values.append(abs(values_ex[j][0]-values_heu[j][0])/values_ex[j][0]*100)
+    
+    means = []
+    variances = []
+    
+    for i in values:
+        means.append(np.mean(i))
+        variances.append((np.var(i))**0.5)
+  
+
+    pyplot.errorbar(labelled, means, yerr=variances, linestyle='None', marker='o', ecolor='r', color='k')
+    pyplot.xlabel(x_label)
+    pyplot.ylabel(y_label)
+    pyplot.title(t_itle)
+    pyplot.grid()
+    pyplot.savefig(f"./results/bar_plot_"+fname+".png")
+    pyplot.close()
