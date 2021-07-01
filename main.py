@@ -70,8 +70,8 @@ if __name__ == '__main__':
     # 1) in sample stability #####################################################################
     test = Tester() #instantiating the tester class
     
-    n_repetitions = 10
-    n_scenarios_in = 10
+    n_repetitions = 50
+    n_scenarios_in = 20
 
     of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data, n_repetitions) #in sample resolution method for the exact solver
     of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data, n_repetitions) #in sample resolution method for the heuristic
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     )
     # 2) out of sample stability #######################################################################
     
-    n_repetitions=10
+    n_repetitions=50
     n_scenarios_in = 20 #n of scenarios used to train the model
     n_scenarios_out = 10 #n of scenarios used to test the results obtained
     labels=range(1, n_scenarios_in+1)
