@@ -99,6 +99,123 @@ def konect_graph(fp):
         
         return konnect_g, konnect_g.order() 
 
+def erdos_renyi(order):
+    edge_prob = 0.8
+    ER_g = nx.erdos_renyi_graph(order, edge_prob)
+    g_copy = nx.DiGraph()
+
+    for i in range(order):
+        g_copy.add_node(i)
+
+    adj = ER_g._adj
+
+    for i in range(len(adj)):
+        neighbors = adj[i].keys()
+        for neigh in neighbors:
+            g_copy.add_edge(i, neigh)
+    
+    g_copy = assign_weights(g_copy)
+    
+    return g_copy
+
+
+def watt_strogatz(order):
+    edge_prob = 0.4
+    n_neigh = int(order/10)
+    WS_g = nx.watts_strogatz_graph(order, n_neigh, edge_prob)      
+    g_copy = nx.DiGraph()
+    for i in range(order):
+        g_copy.add_node(i)
+
+    adj = WS_g._adj
+
+    for i in range(len(adj)):
+        neighbors = adj[i].keys()
+        for neigh in neighbors:
+            g_copy.add_edge(i, neigh)
+
+    g_copy = assign_weights(g_copy)
+
+    return g_copy
+
+
+def regular_random(order):
+    node_degree = 5
+    random_reg = nx.random_regular_graph(node_degree, order)
+    g_copy = nx.DiGraph()
+    for i in range(order):
+        g_copy.add_node(i)
+
+    adj = random_reg._adj
+
+    for i in range(len(adj)):
+        neighbors = adj[i].keys()
+        for neigh in neighbors:
+            g_copy.add_edge(i, neigh)
+
+    g_copy = assign_weights(g_copy)
+
+    return g_copy
+
+
+def barabasi_albert(order):
+    stubs = 3 #connection from the new node to the already existing
+    BA_g = nx.barabasi_albert_graph(order, stubs)
+    g_copy = nx.DiGraph()
+    for i in range(order):
+        g_copy.add_node(i)
+
+    adj = BA_g._adj
+
+    for i in range(len(adj)):
+        neighbors = adj[i].keys()
+        for neigh in neighbors:
+            g_copy.add_edge(i, neigh)
+
+    g_copy = assign_weights(g_copy)
+
+    return g_copy
+
+def powerlaw_cluster(order):
+    stubs = 3 #connection from the new node to the already existing
+    prob = 0.8
+    powerclust = nx.powerlaw_cluster_graph(order, stubs, prob)
+    g_copy = nx.DiGraph()
+    for i in range(order):
+        g_copy.add_node(i)
+
+    adj = powerclust._adj
+
+    for i in range(len(adj)):
+        neighbors = adj[i].keys()
+        for neigh in neighbors:
+            g_copy.add_edge(i, neigh)
+
+    g_copy = assign_weights(g_copy)
+
+    return g_copy
+
+def random_lobster(order):
+    p1 = 0.7
+    p2 = 0.4
+    rand_lobster = nx.random_lobster(order, p1, p2)
+    g_copy = nx.DiGraph()
+    for i in range(order):
+        g_copy.add_node(i)
+
+    adj = rand_lobster._adj
+
+    for i in range(len(adj)):
+        neighbors = adj[i].keys()
+        for neigh in neighbors:
+            g_copy.add_edge(i, neigh)
+
+    g_copy = assign_weights(g_copy)
+
+    return g_copy
+
+
+
 
 
 class Instance(): 
