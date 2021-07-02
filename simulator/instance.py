@@ -237,6 +237,19 @@ class Instance():
             elif sim_setting["Graph_type"]=='konect':
                 self.g, nodes=konect_graph(sim_setting["fp"])
                 self.graph_order=nodes
+            elif sim_setting["Graph_type"]=='erdos_renyi':
+                self.g = erdos_renyi(self.graph_order)
+            elif sim_setting["Graph_type"]=='watt_strogatz':
+                self.g = watt_strogatz(self.graph_order)
+            elif sim_setting["Graph_type"]=='regular_random':
+                self.g = regular_random(self.graph_order)
+            elif sim_setting["Graph_type"]=='barabasi_albert':
+                self.g = barabasi_albert(self.graph_order)
+            elif sim_setting["Graph_type"]=='powerlaw_cluster':
+                self.g = powerlaw_cluster(self.graph_order)
+            elif sim_setting["Graph_type"]=='random_lobster':
+                self.g = random_lobster(self.graph_order)
+
         except: #error handler
             print("No graph type exists with specified type")
             sys.exit(1)
