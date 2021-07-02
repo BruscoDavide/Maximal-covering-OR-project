@@ -1,8 +1,1 @@
-{
-	"Graph_Order": 10,
-	"Seed_card": 2,
-	"Graph_seed_generation" : 42,
-	"Graph_type" : "random",
-	"File_Name_Graph" : "out.txt",
-	"fp" : []
-}
+{"Graph_Order": 10, "Seed_card": 2, "Graph_seed_generation": 42, "Graph_type": "erdos_renyi", "File_Name_Graph": "out.txt", "fp": []}

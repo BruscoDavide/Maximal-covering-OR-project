@@ -39,80 +39,13 @@ if __name__ == '__main__':
     dict_data = inst.get_data()
     
     prb = LargeScaleInfluence()
-    """ # Once the problem instance is created, an arbitrary number of scenarios are generated for the seed set problem solution
-    n_scenarios = 200
-    reachability = sam.reachability_generation(
-        inst,
-        n_scenarios=n_scenarios
-    )
-    
-    #creating the Gurobi solver object
-    prb = LargeScaleInfluence()
-    #solving the problem with a LP approach
-    of_exact, sol_exact, comp_time_exact = prb.solve(
-        dict_data,
-        reachability,
-        n_scenarios,
-        verbose = True
-    )
-    print(of_exact, sol_exact, comp_time_exact)
-    
-    #creating the Heuristic solver object
     heu1 = FirstHeuristic()
-    #solving the problem with the heuristic approach
-    of_heu, sol_heu, comp_time = heu1.solve(
-        dict_data,
-        reachability,
-        n_scenarios
-    )
-    print(of_heu, sol_heu, comp_time) """
 
-    #%% COMPARISON:
-    # 1) in sample stability #####################################################################
-    test = Tester() #instantiating the tester class
-    
-    n_repetitions = 30
-    n_scenarios_in = 100
-    
-    of_grblist, of_ex_boxes=test.in_sample_stability(prb, sam, inst, n_scenarios_in, dict_data, n_repetitions) #in sample resolution method for the exact solver
-    #of_heulist, of_heu_boxes=test.in_sample_stability(heu1, sam, inst, n_scenarios_in, dict_data, n_repetitions) #in sample resolution method for the heuristic
-    labels=range(1,n_scenarios_in+1)
-
-    #plot the in sample stability results for the exact solution
-    bar_plots(
-            of_ex_boxes, 
-            labels,
-            'Scenarios',
-            "OF",
-            "OF value exact vs. number of scenarios",
-            "in_sample_grb_"+dict_data["gnam"], 0
-            )
-    """ #plot the in sample stability results for the heuristic solution
-    bar_plots(
-            of_heu_boxes, 
-            labels,
-            'scenarios',
-            "OF",
-            "OF value heuristic vs. number of scenarios",
-            "in_sample_heu_"+dict_data["gnam"], 0
-            )
-
-    bar_plots_gap(
-        of_ex_boxes,
-        of_heu_boxes,
-        labels,
-        'Scenarios',
-        "GAP %",
-        "GAP between heuristic and exact approach",
-        "gap_bar_plot_"+dict_data["gnam"]
-
-    ) """
-    """
     # 2) out of sample stability #######################################################################
-    
-    n_repetitions=50
-    n_scenarios_in = 20 #n of scenarios used to train the model
-    n_scenarios_out = 10 #n of scenarios used to test the results obtained
+    test = Tester() #instantiating the tester class
+    n_repetitions=30
+    n_scenarios_in = 100 #n of scenarios used to train the model
+    n_scenarios_out = 50 #n of scenarios used to test the results obtained
     labels=range(1, n_scenarios_in+1)
 
     E_inf_grblist, E_ex_boxes=test.out_of_sample_stability(prb, sam, inst,  n_scenarios_in,n_scenarios_out, dict_data, n_repetitions) #out of sample stability for exact solver
@@ -138,9 +71,9 @@ if __name__ == '__main__':
             )
 
     # 3) VSS solution #######################################################################################
-    n_scen_in=50
-    n_scen_out=200
-    n_repetitions=100
+    n_scen_in=100
+    n_scen_out=100
+    n_repetitions=50
     tresh_res=0.05
     VSS_tot, tresh=test.VSS_solve(
         tresh_res,
@@ -167,18 +100,4 @@ if __name__ == '__main__':
         )
 
     
-    # printing results of a file
-    file_output = open(
-        "./results/exp_general_table.csv",
-        "w"
-    )
-    file_output.write("method, of, sol, time\n")
-    file_output.write("{}, {}, {}, {}\n".format(
-        "heu", of_heu, sol_heu, comp_time
-    ))
-    file_output.write("{}, {}, {}, {}\n".format(
-        "exact", of_exact, sol_exact, comp_time_exact
-    ))
-    file_output.close()
-    
- """
+ 

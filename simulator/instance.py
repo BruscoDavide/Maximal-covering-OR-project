@@ -100,7 +100,7 @@ def konect_graph(fp):
         return konnect_g, konnect_g.order() 
 
 def erdos_renyi(order):
-    edge_prob = 0.8
+    edge_prob = 0.8 #high wiring probability to create a graph with high density of nodes
     ER_g = nx.erdos_renyi_graph(order, edge_prob)
     g_copy = nx.DiGraph()
 

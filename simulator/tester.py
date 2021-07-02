@@ -52,11 +52,16 @@ class Tester():
     def in_sample_stability(self, problem, sampler, instance, n_scenarios_sol, dict_data, n_repetitions):
         
         boxes_data=[]
+        dict_timings = {}
+        dict_of = {}
         #generate N_scenarios_sol for the reachability generation to train the model on
         #each iteration has a different number of scenarios to analyze how the system behaves when increasing the number of scenarios
         for i in range(1,n_scenarios_sol+1):
             boxes_data.append([])
             ans = []
+            dict_timings[str(i)] = []
+            dict_of[str(i)] = []
+            print(i)
             for nr in range(n_repetitions):
                 reachability = sampler.reachability_generation(
                     instance,
@@ -68,6 +73,8 @@ class Tester():
                     i
                 )
                 ans.append(of) #save all the objective function values in order to be able to do a statistics depending on the number of scenarios
+                dict_timings[str(i)].append(comp_time)
+                dict_of[str(i)].append(of)
             what=np.zeros(len(ans))
             for j in range(len(what)): 
                 what[j]=float(ans[j])
@@ -76,7 +83,7 @@ class Tester():
         logging.info("In-sample stability considered vectors: ")
         logging.info("Value of the Objective Function: "+str(boxes_data))
         
-        return ans, boxes_data
+        return ans, boxes_data, dict_timings, dict_of
     
 
        
